@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 50" fill="none">
+  <!-- Icône abstraite DC -->
+  <g>
+    <!-- Forme D stylisée -->
+    <path d="M5 8h12c8 0 14 6 14 14s-6 14-14 14H5V8z" fill="#DBEAFE"/>
+    <!-- C stylisée intégrée -->
+    <path d="M25 15c0-3 4-5 8-5h6v4h-5c-2 0-4 2-4 4v12c0 2 2 4 4 4h5v4h-6c-4 0-8-2-8-5" fill="#1E3A8B"/>
+    <!-- Point accent -->
+    <circle cx="38" cy="25" r="3" fill="#FFBC9F"/>
+  </g>
+  
+  <!-- Texte Drawcaf -->
+  <text x="55" y="33" font-family="'Plus Jakarta Sans', sans-serif" font-size="22" font-weight="700" fill="#FFFFFF">Drawcaf</text>
+</svg>
