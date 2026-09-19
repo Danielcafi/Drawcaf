@@ -2,6 +2,7 @@ export const FEDAPAY_CONFIG = {
   publicKey: import.meta.env.VITE_FEDAPAY_PUBLIC_KEY,
   secretKey: import.meta.env.VITE_FEDAPAY_SECRET_KEY,
   baseUrl: 'https://api.fedapay.com/v1',
+  returnUrl: import.meta.env.VITE_FEDAPAY_RETURN_URL || 'https://drawcaf.vercel.app/payment/callback',
 }
 
 export const isFedapayConfigured = () => {
