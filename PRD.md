@@ -2,42 +2,65 @@
 
 ## Vision du Produit
 
-**Drawcaf** est une plateforme e-commerce open-source permettant aux entrepreneurs et entreprises de créer, gérer et développer leur boutique en ligne. Le site actuel est une landing page marketing destinée à convertir les visiteurs en utilisateurs.
+**Drawcaf** est une marketplace e-commerce open-source à deux côtés :
+- **Vendeurs** : Créent leur boutique et mettent leurs produits en vente
+- **Acheteurs** : Viennent acheter en toute confiance
+
+**Principe fondamental** : Inspirer confiance à chaque étape du parcours.
 
 ---
 
-## MVP - Fonctionnalités à Implémenter
+## Les Deux Acteurs Principaux
 
-### 1. Authentification & Onboarding
-
-| Fonctionnalité | Description | Priorité |
-|----------------|-------------|----------|
-| Inscription email/mot de passe | Créer un compte utilisateur | 🔴 Haute |
-| Connexion social (Google, GitHub) | Authentification OAuth | 🔴 Haute |
-| Mot de passe oublié | Récupération par email | 🟡 Moyenne |
-| Onboarding wizard | Guide de configuration du magasin | 🟡 Moyenne |
-| Vérification email | Confirmation par lien | 🟡 Moyenne |
-
-**User Stories:**
-- En tant qu'utilisateur, je veux m'inscrire en 1 clic avec Google
-- En tant qu'utilisateur, je veux un guide étape par étape pour configurer ma boutique
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        DRAWCAF                              │
+├─────────────────────┬───────────────────────────────────────┤
+│      VENDEUR        │             ACHETEUR                  │
+├─────────────────────┼───────────────────────────────────────┤
+│ • Crée sa boutique  │ • Parcourt les produits              │
+│ • Ajoute ses        │ • Compare les prix                   │
+│   produits          │ • Lit les avis                       │
+│ • Fixe les prix     │ • Achète en sécurité                 │
+│ • Gère les commandes│ • Reçoit à domicile                  │
+│ • Reçoit le paiement│ • Pose des questions au vendeur      │
+│ • Construit sa      │ • Laisse des avis                    │
+│   réputation        │ • Revient acheter                     │
+└─────────────────────┴───────────────────────────────────────┘
+```
 
 ---
 
-### 2. Dashboard Admin
+## MVP - VENDEUR
+
+### 1. Inscription Vendeur
 
 | Fonctionnalité | Description | Priorité |
 |----------------|-------------|----------|
-| Vue d'ensemble | Statistiques ventes, visiteurs, revenus | 🔴 Haute |
-| Gestion des produits | CRUD produits avec images | 🔴 Haute |
-| Gestion des commandes | Liste, détails, statuts | 🔴 Haute |
-| Gestion des clients | Liste clients, historique | 🟡 Moyenne |
-| Paramètres du magasin | Nom, logo, devise, langue | 🔴 Haute |
-| Analytics | Graphiques de performance | 🟡 Moyenne |
+| Création compte | Email + mot de passe | 🔴 Haute |
+| Connexion Google/Apple | Auth social en 1 clic | 🔴 Haute |
+| Profil vendeur | Nom, photo, bio, localisation | 🔴 Haute |
+| Vérification identité | Pièce d'identité pour badge "Vérifié" | 🟡 Moyenne |
+| Acceptation CGU | Conditions générales d'utilisation | 🔴 Haute |
 
-**User Stories:**
-- En tant que marchand, je veux voir mes ventes du jour en un coup d'œil
-- En tant que marchand, je veux ajouter un produit en moins de 2 minutes
+**User Story :** *En tant que vendeur, je veux créer mon compte en moins de 2 minutes.*
+
+---
+
+### 2. Création de Boutique
+
+| Fonctionnalité | Description | Priorité |
+|----------------|-------------|----------|
+| Nom de la boutique | Titre unique | 🔴 Haute |
+| Logo boutique | Upload image | 🔴 Haute |
+| Description | Texte de présentation | 🔴 Haute |
+| Banner | Image de couverture | 🟡 Moyenne |
+| Catégorie d'activité | Mode, Tech, Maison, etc. | 🔴 Haute |
+| Localisation | Ville, Pays | 🔴 Haute |
+| Politique de retour | Conditions de remboursement | 🔴 Haute |
+| Délai de traitement | Temps de préparation | 🔴 Haute |
+
+**User Story :** *En tant que vendeur, je veux personnaliser ma boutique pour refléter ma marque.*
 
 ---
 
@@ -45,277 +68,169 @@
 
 | Fonctionnalité | Description | Priorité |
 |----------------|-------------|----------|
-| Ajouter/Modifier/Supprimer | CRUD complet | 🔴 Haute |
-| Upload d'images multiples | Galerie produit | 🔴 Haute |
-| Variantes (taille, couleur) | Options configurables | 🔴 Haute |
-| Inventaire | Gestion du stock | 🔴 Haute |
-| Catégories & Tags | Organisation | 🟡 Moyenne |
-| Import/Export CSV | Migration de données | 🟢 Basse |
-| Produits numériques | Téléchargements | 🟢 Basse |
+| Ajouter un produit | Titre, description, prix | 🔴 Haute |
+| Photos multiples | Jusqu'à 10 images par produit | 🔴 Haute |
+| Variantes | Taille, couleur, matière | 🔴 Haute |
+| Prix | Prix de base + prix variantes | 🔴 Haute |
+| Inventaire | Quantité en stock | 🔴 Haute |
+| Poids/Dimensions | Pour calcul livraison | 🔴 Haute |
+| Catégorie produit | Organisation | 🔴 Haute |
+| Tags | Mots-clés pour recherche | 🟡 Moyenne |
+| Produit numérique | Fichiers téléchargeables | 🟢 Basse |
+| Brouillon | Sauvegarder sans publier | 🟡 Moyenne |
 
-**User Stories:**
-- En tant que marchand, je veux ajouter 10 produits via un fichier CSV
-- En tant que marchand, je veux gérer les variantes de chaque produit
+**User Story :** *En tant que vendeur, je veux ajouter un produit avec 5 photos en moins de 3 minutes.*
 
 ---
 
-### 4. Boutique Client (Storefront)
+### 4. Dashboard Vendeur
 
 | Fonctionnalité | Description | Priorité |
 |----------------|-------------|----------|
-| Page d'accueil | Design personnalisable | 🔴 Haute |
+| Vue d'ensemble | Ventes du jour/semaine/mois | 🔴 Haute |
+| Commandes récentes | Liste avec statuts | 🔴 Haute |
+| Revenus | Chiffre d'affaires | 🔴 Haute |
+| Produits populaires | Top ventes | 🟡 Moyenne |
+| Messages clients | Répondre aux questions | 🟡 Moyenne |
+| Avis reçus | Notes et commentaires | 🔴 Haute |
+| Paramètres | Boutique, paiement, livraison | 🔴 Haute |
+
+**User Story :** *En tant que vendeur, je veux voir mes ventes du jour en un coup d'œil.*
+
+---
+
+### 5. Gestion des Commandes
+
+| Fonctionnalité | Description | Priorité |
+|----------------|-------------|----------|
+| Liste des commandes | Filtrer par statut | 🔴 Haute |
+| Détail commande | Produits, client, montant | 🔴 Haute |
+| Changer le statut | En préparation → Expédié → Livré | 🔴 Haute |
+| Ajouter un numéro de suivi | Tracking colis | 🔴 Haute |
+| Imprimer bordereau | Étiquette d'expédition | 🟡 Moyenne |
+| Remboursement | Rembourser une commande | 🔴 Haute |
+
+**User Story :** *En tant que vendeur, je veux mettre à jour le statut d'une commande en 1 clic.*
+
+---
+
+### 6. Paiements Vendeur
+
+| Fonctionnalité | Description | Priorité |
+|----------------|-------------|----------|
+| Connect Stripe | Compte Stripe connecté | 🔴 Haute |
+| Versement automatique | Paiement sous 7 jours | 🔴 Haute |
+| Historique paiements | Revenus par période | 🔴 Haute |
+| Factures | Télécharger factures | 🟡 Moyenne |
+| Commission plateforme | 5% par transaction | 🔴 Haute |
+
+**User Story :** *En tant que vendeur, je veux recevoir mon paiement automatiquement chaque semaine.*
+
+---
+
+### 7. Réputation Vendeur
+
+| Fonctionnalité | Description | Priorité |
+|----------------|-------------|----------|
+| Badge vendeur | Nouveau / Vérifié / Top Vendeur | 🔴 Haute |
+| Note moyenne | Calcul basé sur les avis | 🔴 Haute |
+| Temps de réponse | Délai moyen réponse messages | 🟡 Moyenne |
+| Taux de satisfaction | % avis positifs | 🔴 Haute |
+| Historique ventes | Nombre total de ventes | 🔴 Haute |
+
+**User Story :** *En tant que vendeur, je veux obtenir le badge "Top Vendeur" pour attirer plus de clients.*
+
+---
+
+## MVP - ACHETEUR
+
+### 1. Navigation & Découverte
+
+| Fonctionnalité | Description | Priorité |
+|----------------|-------------|----------|
+| Page d'accueil | Produits tendance, catégories | 🔴 Haute |
 | Catalogue produits | Liste avec filtres | 🔴 Haute |
-| Page produit | Détails, galerie, avis | 🔴 Haute |
-| Panier | Ajout, modification, suppression | 🔴 Haute |
-| Recherche | Recherche produit | 🟡 Moyenne |
-| WishList | Liste de souhaits | 🟢 Basse |
-| Multi-langue | Internationalisation | 🟢 Basse |
-| Multi-devises | Devise locale | 🟡 Moyenne |
+| Recherche | Par nom, catégorie, vendeur | 🔴 Haute |
+| Filtres | Prix, note, localisation, catégorie | 🔴 Haute |
+| Tri | Prix croissant/décroissant, popularité | 🔴 Haute |
+| Catégories | Organisation par thème | 🔴 Haute |
+| Produits similaires | "Vous aimerez aussi" | 🟡 Moyenne |
 
-**User Stories:**
-- En tant que client, je veux filtrer les produits par prix et catégorie
-- En tant que client, je veux sauvegarder mes produits favoris
+**User Story :** *En tant qu'acheteur, je veux trouver un produit en moins de 30 secondes.*
 
 ---
 
-### 5. Paiement & Checkout
+### 2. Page Produit
 
 | Fonctionnalité | Description | Priorité |
 |----------------|-------------|----------|
-| Stripe Integration | Paiement carte bancaire | 🔴 Haute |
-| PayPal Integration | Paiement PayPal | 🔴 Haute |
-| Page de checkout | Formulaire sécurisé | 🔴 Haute |
-| Factures | Génération automatique PDF | 🔴 Haute |
-| Remises & Coupons | Codes promo | 🟡 Moyenne |
-| Abonnements | Paiements récurrents | 🟢 Basse |
-| Apple Pay / Google Pay | Paiement mobile | 🟡 Moyenne |
+| Galerie photos | Zoom, plein écran | 🔴 Haute |
+| Titre & Description | Détails complets | 🔴 Haute |
+| Prix | Prix actuel + ancien prix si promo | 🔴 Haute |
+| Variantes | Sélection taille/couleur | 🔴 Haute |
+| Stock | "En stock" / "Plus que X" / "Rupture" | 🔴 Haute |
+| Avis clients | Notes + commentaires | 🔴 Haute |
+| Profil vendeur | Photo, note, nombre ventes | 🔴 Haute |
+| Politique retour | Conditions affichées | 🔴 Haute |
+| Livraison estimée | Délai + frais | 🔴 Haute |
+| Ajouter au panier | CTA clair | 🔴 Haute |
+| Ajouter aux favoris | Wishlist | 🟡 Moyenne |
+| Partager | Réseaux sociaux | 🟢 Basse |
 
-**User Stories:**
-- En tant que client, je veux payer en 1 clic avec Apple Pay
-- En tant que marchand, je veux créer un code promo de -20%
+**User Story :** *En tant qu'acheteur, je veux voir les avis avant d'acheter.*
 
 ---
 
-### 6. Expédition & Livraison
+### 3. Panier & Checkout
 
 | Fonctionnalité | Description | Priorité |
 |----------------|-------------|----------|
-| Zones de livraison | Configuration par zone | 🔴 Haute |
-| Tarifs fixes | Frais de port fixes | 🔴 Haute |
-| Suivi colis | Tracking automatique | 🟡 Moyenne |
-| Livraison gratuite | Seuil minimum | 🟡 Moyenne |
-| Dropshipping | Intégration fournisseurs | 🟢 Basse |
+| Panier | Produits sélectionnés | 🔴 Haute |
+| Modifier quantité | + / - | 🔴 Haute |
+| Supprimer produit | Retirer du panier | 🔴 Haute |
+| Code promo | Appliquer réduction | 🔴 Haute |
+| Résumé commande | Sous-total, livraison, total | 🔴 Haute |
+| Adresse livraison | Formulaire + adresses sauvegardées | 🔴 Haute |
+| Choix livraison | Standard / Express | 🔴 Haute |
+| Paiement | Carte, PayPal, Apple Pay | 🔴 Haute |
+| Confirmation | Page succès + email | 🔴 Haute |
 
-**User Stories:**
-- En tant que client, je veux suivre ma commande en temps réel
-- En tant que marchand, je veux offrir la livraison gratuite au-dessus de 50€
+**User Story :** *En tant qu'acheteur, je veux payer en 3 clics maximum.*
 
 ---
 
-### 7. Notifications & Communication
+### 4. Suivi de Commande
 
 | Fonctionnalité | Description | Priorité |
 |----------------|-------------|----------|
-| Email transactionnel | Confirmation commande | 🔴 Haute |
-| Email marketing | Newsletters | 🟡 Moyenne |
-| Notifications push | Alertes ventes | 🟢 Basse |
-| Chat support | Messagerie en direct | 🟢 Basse |
-| SMS notifications | Alertes importantes | 🟢 Basse |
+| Historique commandes | Liste des achats | 🔴 Haute |
+| Détail commande | Produits, statut, suivi | 🔴 Haute |
+| Numéro de suivi | Lien vers transporteur | 🔴 Haute |
+| Notification statut | Email à chaque changement | 🔴 Haute |
+| Annuler commande | Si pas pas �bitabelaselmuconrecoseleltitaela tu elasesaelelenenezaza el备受elaitabes laarpclus que el tu que queutun elel tuquepeltuearesperenteelelel mide eladelo mucho respir allign elap el el incomper hayat estey que que queelelildeela mioanteelion可爱 muchoensio elAoaairesy que elcreelaselel3az enity** amor<think>as<oviarasadaelaeladoselelalastoconaielas**
 
-**User Stories:**
-- En tant que client, je veux recevoir un email de confirmation immédiat
-- En tant que marchand, je veux être notifié de chaque nouvelle commande
 
----
 
-## Fonctionnalités Futures (Post-MVP)
+**
 
-### Phase 2 - Croissance
-
-| Fonctionnalité | Description | Impact |
-|----------------|-------------|--------|
-| Marketplace | Multi-vendeurs | Élevé |
-| Mobile App (React Native) | Application iOS/Android | Élevé |
-| IA de recommandation | Produits suggérés | Élevé |
-| Programmes de fidélité | Points & récompenses | Moyen |
-| A/B Testing | Optimisation conversion | Moyen |
-| API GraphQL | Intégrations avancées | Moyen |
-
-### Phase 3 - Expansion
-
-| Fonctionnalité | Description | Impact |
-|----------------|-------------|--------|
-| Multi-tenant SaaS | Plusieurs magasins/compte | Élevé |
-| Intégration comptable | QuickBooks, FreshBooks | Moyen |
-| Dropshipping intégré | AliExpress, Oberlo | Élevé |
-| Chat IA support | Support automatisé | Moyen |
-| Analytics avancés | Prédictions IA | Moyen |
-| White-label | Solution blanche | Élevé |
-
-### Phase 4 - Écosystème
-
-| Fonctionnalité | Description | Impact |
-|----------------|-------------|--------|
-| Marketplace de thèmes | Templates premium | Élevé |
-| Marketplace d'apps | Extensions tierces | Élevé |
-| API publique | Développeurs tiers | Élevé |
-| Programmes d'affiliation | Partenaires | Moyen |
-| Formation en ligne | Cours e-commerce | Moyen |
+terminiser les filtres (prix, catégorie, vendeur vérifié)
+- **Avis vérifiés** : Seuls les acheteurs réels peuvent laisser un avis
+- **Badge vendeur** : Vérifié, Top Vendeur, Nouveau
+- **Paiement sécurisé** : Stripe + protection acheteur
+- **Garantie remboursement** : 30 jours pour retour
+- **Support réactif** : Réponse du vendeur sous 24h
 
 ---
 
-## Stack Technique Recommandée
+## Roadmap MVP
 
-### Frontend (Actuel)
-- React + Vite
-- Tailwind CSS
-- Framer Motion
-
-### Backend (À créer)
-- **API:** Node.js + Express / ou Next.js API Routes
-- **Base de données:** PostgreSQL + Prisma ORM
-- **Auth:** NextAuth.js / Clerk
-- **Paiement:** Stripe SDK
-- **Stockage images:** Cloudinary / AWS S3
-- **Email:** Resend / SendGrid
-- **Déploiement:** Vercel + PlanetScale
-
----
-
-## Acquisition d'Acheteurs (Buyer Acquisition)
-
-### Stratégie d'Attraction
-
-Pour attirer les acheteurs sur la plateforme, Drawcaf doit résoudre le problème de l'œuf et de la poule : les marchands veulent des acheteurs, les acheteurs veulent du contenu.
-
-#### Phase 1 - Seed (Mois 1-3)
-
-| Stratégie | Description | Objectif |
-|-----------|-------------|----------|
-| SEO & Content Marketing | Articles de blog sur le e-commerce | 10K visiteurs/mois |
-| Social Media (Instagram, TikTok) | Contenu visuel produits tendance | 5K followers |
-| Programmes d'affiliation | Commission par vente pour les partenaires | 50 affiliés |
-| Marketplaces existantes | Intégration Etsy, Amazon comme source | 100 produits listés |
-
-#### Phase 2 - Growth (Mois 4-6)
-
-| Stratégie | Description | Objectif |
-|-----------|-------------|----------|
-| Google Shopping Ads | Publicités produits ciblées | 1K clics/jour |
-| Facebook/Instagram Ads | Retargeting visiteurs | 2% taux conversion |
-| Email Marketing | Newsletters produits tendance | 10K inscrits |
-| Influence Marketing | Collaborations micro-influenceurs | 20 collabs/mois |
-| Referral Program | Parrainage clients (crédit offert) | 1K parrainages/mois |
-
-#### Phase 3 - Scale (Mois 7-12)
-
-| Stratégie | Description | Objectif |
-|-----------|-------------|----------|
-| Marketplace Hub | Regroupement de boutiques par catégorie | 500 boutiques |
-| Livraison gratuite offerte | Subventionned by Drawcaf | +30% conversions |
-| Fidélité & Gamification | Points, badges, récompenses | 40% rétention |
-| App Mobile | Push notifications promotions | 20K téléchargements |
-| SEO Avancé | Pages catégories optimisées | 50K visiteurs/mois |
-
----
-
-### Features d'Acquisition Acheteurs (À développer)
-
-#### 1. Découverte & Navigation
-
-| Fonctionnalité | Description | Priorité |
-|----------------|-------------|----------|
-| Page d'accueil personnalisée | Recommandations basées sur l'historique | 🔴 Haute |
-| Catégories trending | Produits tendance du moment | 🔴 Haute |
-| Recherche avancée | Filtres prix, note, localisation | 🔴 Haute |
-| Collections thématiques | "Noël", "Été", "Tech" | 🟡 Moyenne |
-| Produits vus récemment | Historique de navigation | 🟡 Moyenne |
-| Similar Products | "Vous aimerez aussi" | 🟡 Moyenne |
-
-#### 2. Social Proof & Confiance
-
-| Fonctionnalité | Description | Priorité |
-|----------------|-------------|----------|
-| Avis vérifiés | Système de notation 5 étoiles | 🔴 Haute |
-| Photos clients | UGC (User Generated Content) | 🔴 Haute |
-| Nombre de ventes affiché | "123 vendus" | 🔴 Haute |
-| Badge vendeur fiable | Certification marchand | 🟡 Moyenne |
-| Livraison vérifiée | Confirmation de réception | 🟡 Moyenne |
-
-#### 3. Engagement & Rétention
-
-| Fonctionnalité | Description | Priorité |
-|----------------|-------------|----------|
-| WishList | Sauvegarder pour plus tard | 🔴 Haute |
-| Alertes prix | Notification baisse de prix | 🟡 Moyenne |
-| Programmes de fidélité | Points échangeables | 🟡 Moyenne |
-| Coupons personnalisés | Offres ciblées | 🔴 Haute |
-| Flash Sales | Ventes flash limitées | 🟡 Moyenne |
-| Gamification | Badges, niveaux, récompenses | 🟢 Basse |
-
-#### 4. Communication & Support
-
-| Fonctionnalité | Description | Priorité |
-|----------------|-------------|----------|
-| Chat avec vendeur | Messagerie directe | 🔴 Haute |
-| Notifications push | Nouveaux produits, promotions | 🟡 Moyenne |
-| Email transactionnel | Suivi commande | 🔴 Haute |
-| FAQ intégrée | Questions fréquentes | 🟡 Moyenne |
-| Support chat en direct | Service client | 🟢 Basse |
-
----
-
-### KPIs d'Acquisition Acheteurs
-
-| Métrique | Objectif M3 | Objectif M6 | Objectif M12 |
-|----------|-------------|-------------|--------------|
-| Visiteurs uniques/mois | 10K | 50K | 200K |
-| Taux de conversion visiteur → achat | 1% | 2% | 3% |
-| Panier moyen | 30€ | 45€ | 60€ |
-| Taux de rétention (30j) | 15% | 25% | 40% |
-| Reviews moyennes | 4.2/5 | 4.5/5 | 4.7/5 |
-| Temps moyen sur site | 2min | 4min | 6min |
-| Pages vues/visite | 3 | 5 | 8 |
-
----
-
-### Budget Marketing Estimé
-
-| Poste | M1-3 | M4-6 | M7-12 |
-|-------|------|------|-------|
-| Content & SEO | 500€ | 1000€ | 2000€ |
-| Social Media Ads | 1000€ | 3000€ | 8000€ |
-| Google Ads | 500€ | 2000€ | 5000€ |
-| Influence Marketing | 500€ | 2000€ | 5000€ |
-| Affiliation | 0€ | 1000€ | 3000€ |
-| **Total** | **2500€** | **9000€** | **23000€** |
-
----
-
-## Métriques de Succès MVP
-
-| Métrique | Objectif |
-|----------|----------|
-| Temps de création boutique | < 5 minutes |
-| Taux de conversion landing → inscription | > 5% |
-| Temps de chargement page | < 2 secondes |
-| Taux de satisfaction utilisateur | > 4/5 |
-| Nombre de marchands actifs (M1) | 100+ |
-
----
-
-## Roadmap Estimée
-
-| Phase | Durée | Livrables |
-|-------|-------|-----------|
-| MVP - Sprint 1-2 | 4 semaines | Auth + Dashboard basique |
-| MVP - Sprint 3-4 | 4 semaines | Produits + Boutique |
-| MVP - Sprint 5-6 | 4 semaines | Paiement + Checkout |
-| MVP - Sprint 7-8 | 4 semaines | Expédition + Notifications |
-| **Lancement MVP** | **Semaine 16** | **v1.0** |
-| Phase 2 | Mois 5-8 | Marketplace + Mobile |
-| Phase 3 | Mois 9-12 | Expansion + API |
-| Phase 4 | Année 2 | Écosystème complet |
+| Phase | Durée | Ven deur | Acheteur |
+|-------|-------|----------|----------|
+| Sprint 1-2 | 4 sem | Inscription + Boutique | - |
+| Sprint 3-4 | 4 sem | Produits + Dashboard | Navigation + Page produit |
+| Sprint 5-6 | 4 sem | Commandes + Paiements | Panier + Checkout |
+| Sprint 7-8 | 4 sem | Réputation + Messages | Suivi + Avis |
+| **Lancement** | **Sem 16** | **v1.0 Vendeur** | **v1.0 Acheteur** |
 
 ---
 

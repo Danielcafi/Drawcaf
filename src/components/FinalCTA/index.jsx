@@ -1,5 +1,4 @@
-import SubHead from "../Atoms/subhead";
-import Paragraph from "../Atoms/paragraph";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 export default function FinalCTA() {
@@ -14,12 +13,13 @@ export default function FinalCTA() {
             transition={{ duration: 0.8 }}
             className="text-center flex flex-col items-center gap-8"
           >
-            <SubHead color="text-white" style="sm:w-8/12 lg:w-6/12">
-              Ready to start selling online?
-            </SubHead>
-            <Paragraph fontSize="text-lg" color="text-white/80" style="sm:w-4/5 lg:w-3/5">
-              Join thousands of businesses already using Drawcaf to grow their revenue. Start your free trial today.
-            </Paragraph>
+            <h2 className="font-head font-bold text-3xl sm:text-4xl lg:text-5xl text-white sm:w-8/12 lg:w-6/12">
+              Prêt à vendre en ligne ?
+            </h2>
+            <p className="text-lg text-white/80 sm:w-4/5 lg:w-3/5">
+              Rejoignez des milliers d'entreprises qui utilisent Drawcaf pour croître. 
+              Commencez votre essai gratuit dès aujourd'hui.
+            </p>
           </motion.div>
 
           <motion.div
@@ -41,12 +41,18 @@ export default function FinalCTA() {
               <div className="absolute inset-0 bg-gradient-to-t from-primary-100/90 via-primary-100/30 to-transparent" />
               <div className="absolute inset-0 flex flex-col items-center justify-end pb-10 px-6">
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="bg-white text-primary-100 px-8 py-4 font-head font-bold text-lg hover:bg-tertiary-200 transition-all duration-200">
-                    START FREE TRIAL
-                  </button>
-                  <button className="border-2 border-white text-white px-8 py-4 font-head font-bold text-lg hover:bg-white hover:text-primary-100 transition-all duration-200">
-                    SCHEDULE A DEMO
-                  </button>
+                  <Link
+                    to="/register"
+                    className="bg-white text-primary-100 px-8 py-4 font-head font-bold text-lg hover:bg-tertiary-200 transition-all duration-200 text-center"
+                  >
+                    COMMENCER GRATUITEMENT
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="border-2 border-white text-white px-8 py-4 font-head font-bold text-lg hover:bg-white hover:text-primary-100 transition-all duration-200 text-center"
+                  >
+                    SE CONNECTER
+                  </Link>
                 </div>
               </div>
             </div>

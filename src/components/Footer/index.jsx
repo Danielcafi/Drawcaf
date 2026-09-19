@@ -1,7 +1,5 @@
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import MainButton from "../Atoms/button";
-import Paragraph from "../Atoms/paragraph";
-import SubHead from "../Atoms/subhead";
 
 export default function Footer() {
   const footerContent = {
@@ -16,7 +14,7 @@ export default function Footer() {
 
   return (
     <div className="bg-primary-300">
-      {/* Contact */}
+      {/* Contact CTA */}
       <div className="border-b border-white/15 relative overflow-hidden">
         <div className="container mx-auto max-w-[1344px]">
           <motion.section
@@ -25,27 +23,21 @@ export default function Footer() {
             variants={footerContent}
             className="px-5 py-10 flex flex-col items-center text-center sm:px-10"
           >
-            <SubHead
-              color="text-white"
-              style="mb-[18px] sm:w-9/12 md:w-9/12 lg:w-6/12"
+            <h2 className="font-head font-bold text-3xl sm:text-4xl text-white mb-[18px] sm:w-9/12 md:w-9/12 lg:w-6/12">
+              Vous avez un projet en tête ?
+            </h2>
+            <p className="text-white/70 text-sm mb-[30px] sm:w-7/12 lg:w-5/12">
+              Rejoignez Drawcaf et commencez à vendre vos créations aujourd'hui.
+            </p>
+            <Link
+              to="/register"
+              className="w-full sm:w-9/12 sm:w-fit lg:w-fit bg-white text-primary-300 font-bold py-3 px-8 hover:bg-primary-300 hover:border-white hover:text-white border-2 border-white transition-all duration-200"
             >
-              We can take care of the installation
-            </SubHead>
-            <Paragraph
-              color="text-white/70"
-              fontSize="text-sm"
-              style="mb-[30px] sm:w-7/12 lg:w-5/12"
-            >
-              Don’t want to deal with technical stuff? Let us fire up Uvodo for
-              you, so you can spend your time selling right away.
-            </Paragraph>
-            <MainButton style="w-full sm:w-9/12 sm:w-fit lg:w-fit hover:bg-primary-300 hover:border-white hover:text-white transition-all duration-200 ease-in">
-              CONTACT US
-            </MainButton>
+              COMMENCER MAINTENANT
+            </Link>
           </motion.section>
         </div>
 
-        {/* Eclipse */}
         <motion.img
           initial="hidden"
           whileInView="visible"
@@ -71,134 +63,89 @@ export default function Footer() {
           alt="eclipse"
         />
       </div>
+
       {/* Footer */}
       <footer className="container mx-auto max-w-[1344px]">
         <div className="px-5 py-10 flex flex-col sm:px-10 lg:grid grid-cols-3 lg:gap-y-32">
           <div className="lg:col-span-1">
-            <img
-              className="h-10 w-auto mb-10 lg:mb-0"
-              src="/logo-full-white.svg"
-              alt="drawcaf-logo"
-            />
+            <Link to="/" className="block">
+              <img
+                className="h-10 w-auto mb-10 lg:mb-0"
+                src="/logo-full-white.svg"
+                alt="drawcaf-logo"
+              />
+            </Link>
           </div>
           <div className="grid grid-cols-2 gap-9 font-head mb-[52px] md:grid-cols-4 lg:col-span-2 lg:mb-0">
             <div>
-              <h6 className="mb-5 font-bold text-xl text-white">Features</h6>
+              <h6 className="mb-5 font-bold text-xl text-white">Plateforme</h6>
               <div className="flex flex-col gap-4 text-white/70 text-base">
-                <a className="footer-link" href="#">
-                  Find a Patner
-                </a>
-                <a className="footer-link" href="#">
-                  Become a Patner
-                </a>
-                <a className="footer-link" href="#">
-                  Affiliates
-                </a>
-                <a className="footer-link" href="#">
-                  Patner Offers
-                </a>
-                <a className="footer-link" href="#">
-                  Store Examples
-                </a>
+                <Link to="/recherche" className="footer-link hover:text-white transition-colors">
+                  Rechercher
+                </Link>
+                <Link to="/register" className="footer-link hover:text-white transition-colors">
+                  Ouvrir une boutique
+                </Link>
+                <Link to="/about" className="footer-link hover:text-white transition-colors">
+                  À propos
+                </Link>
+                <Link to="/pricing" className="footer-link hover:text-white transition-colors">
+                  Tarifs
+                </Link>
               </div>
             </div>
             <div>
-              <h6 className="mb-5 font-bold text-xl text-white">Company</h6>
+              <h6 className="mb-5 font-bold text-xl text-white">Acheteur</h6>
               <div className="flex flex-col gap-4 text-white/70 text-base">
-                <a className="footer-link" href="#">
-                  Leaders
-                </a>
-                <a className="footer-link" href="#">
-                  About Us
-                </a>
-                <a className="footer-link" href="#">
-                  Careers
-                </a>
-                <a className="footer-link" href="#">
-                  Press
-                </a>
-                <a className="footer-link" href="#">
-                  Awards
-                </a>
+                <Link to="/recherche" className="footer-link hover:text-white transition-colors">
+                  Explorer
+                </Link>
+                <Link to="/cart" className="footer-link hover:text-white transition-colors">
+                  Panier
+                </Link>
+                <Link to="/commandes" className="footer-link hover:text-white transition-colors">
+                  Mes commandes
+                </Link>
+                <Link to="/wishlist" className="footer-link hover:text-white transition-colors">
+                  Liste de souhaits
+                </Link>
               </div>
             </div>
             <div>
-              <h6 className="mb-5 font-bold text-xl text-white">Resources</h6>
+              <h6 className="mb-5 font-bold text-xl text-white">Vendeur</h6>
               <div className="flex flex-col gap-4 text-white/70 text-base">
-                <a className="footer-link" href="#">
-                  Overview
-                </a>
-                <a className="footer-link" href="#">
-                  Articles
-                </a>
-                <a className="footer-link" href="#">
-                  Webinars
-                </a>
-                <a className="footer-link" href="#">
-                  Events
-                </a>
-                <a className="footer-link" href="#">
-                  Ecommerce
-                </a>
+                <Link to="/register" className="footer-link hover:text-white transition-colors">
+                  Commencer
+                </Link>
+                <Link to="/dashboard" className="footer-link hover:text-white transition-colors">
+                  Dashboard
+                </Link>
+                <Link to="/dashboard/products" className="footer-link hover:text-white transition-colors">
+                  Mes produits
+                </Link>
               </div>
             </div>
             <div>
-              <h6 className="mb-5 font-bold text-xl text-white">Get Help</h6>
+              <h6 className="mb-5 font-bold text-xl text-white">Support</h6>
               <div className="flex flex-col gap-4 text-white/70 text-base">
-                <a className="footer-link" href="#">
-                  Drawcaf Company
+                <Link to="/faq" className="footer-link hover:text-white transition-colors">
+                  FAQ
+                </Link>
+                <Link to="/contact" className="footer-link hover:text-white transition-colors">
+                  Contact
+                </Link>
+                <a href="#" className="footer-link hover:text-white transition-colors">
+                  Conditions
                 </a>
-                <a className="footer-link" href="#">
-                  Knowledge Base
-                </a>
-                <a className="footer-link" href="#">
-                  Videos Contact
-                </a>
-                <a className="footer-link" href="#">
-                  Tech Support
-                </a>
-                <a className="footer-link" href="#">
-                  API Documentation
+                <a href="#" className="footer-link hover:text-white transition-colors">
+                  Confidentialité
                 </a>
               </div>
             </div>
           </div>
           <div className="text-center lg:col-span-3 md:flex justify-between items-center">
-            <div className="flex items-center justify-center gap-4 mb-4 order-2">
-              <a href="https://www.instagram.com/bethup97/?next=%2F" target="_blank">
-                <img
-                  className="footer-icon"
-                  src="/instagram.svg"
-                  alt="instagram"
-                />
-              </a>
-              <a href="https://github.com/berthutapea" target="_blank">
-                <img className="footer-icon" src="/github.svg" alt="github" />
-              </a>
-              <a href="https://t.me/bethup97" target="_blank">
-                <img
-                  className="footer-icon"
-                  src="/telegram.svg"
-                  alt="telegram"
-                />
-              </a>
-              <a href="https://www.linkedin.com/in/gilberthutapea/" target="_blank">
-                <img
-                  className="footer-icon"
-                  src="/linkedin.svg"
-                  alt="linkedin"
-                />
-              </a>
-            </div>
             <p className="font-head text-white font-medium text-base order-1">
-              © 2022 Drawcaf by{" "}
-              <a
-                className="italic underline"
-                href="https://danieledoun-portfoilo.vercel.app/"
-                target="_blank"
-              >
-                Daniel EDOUN
-              </a>
+              © 2026 Drawcaf. Tous droits réservés.
             </p>
           </div>
         </div>
