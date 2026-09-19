@@ -87,6 +87,12 @@ export default function Navbar() {
             <Link to="/contact" className="navlink">
               Contact
             </Link>
+            <Link to="/conditions" className="navlink">
+              Conditions
+            </Link>
+            <Link to="/confidentialite" className="navlink">
+              Confidentialité
+            </Link>
           </div>
 
           {/* Actions */}
@@ -248,6 +254,12 @@ export default function Navbar() {
             </Link>
             <Link to="/contact" className="block py-2 text-black-200 hover:text-primary-100" onClick={() => setIsOpen(false)}>
               Contact
+            </Link>
+            <Link to="/conditions" className="block py-2 text-black-200 hover:text-primary-100" onClick={() => setIsOpen(false)}>
+              Conditions
+            </Link>
+            <Link to="/confidentialite" className="block py-2 text-black-200 hover:text-primary-100" onClick={() => setIsOpen(false)}>
+              Confidentialité
             </Link>
             <div className="border-t border-gray-200 pt-2 mt-2">
               {user ? (

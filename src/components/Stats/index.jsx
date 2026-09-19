@@ -2,10 +2,10 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 
 const stats = [
-  { value: 10000, suffix: "+", label: "Active Stores" },
-  { value: 50, suffix: "M+", label: "Products Sold" },
-  { value: 120, suffix: "+", label: "Countries Served" },
-  { value: 99, suffix: "%", label: "Uptime Guaranteed" },
+  { value: 10000, suffix: "+", label: "Boutiques actives" },
+  { value: 50, suffix: "M+", label: "Produits vendus" },
+  { value: 120, suffix: "+", label: "Pays desservis" },
+  { value: 99, suffix: "%", label: "Disponibilité" },
 ];
 
 function Counter({ target, suffix, inView }) {
@@ -30,7 +30,7 @@ function Counter({ target, suffix, inView }) {
 
   return (
     <span>
-      {count.toLocaleString()}{suffix}
+      {count.toLocaleString('fr-FR')}{suffix}
     </span>
   );
 }

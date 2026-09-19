@@ -2,44 +2,77 @@ import Subtitle from "../Atoms/subtitle";
 import SubHead from "../Atoms/subhead";
 import Paragraph from "../Atoms/paragraph";
 import { motion } from "framer-motion";
+import { useAudience } from "../../context/AudienceContext";
 import { Zap, Shield, Clock } from "lucide-react";
 
-const features = [
+const sellerFeatures = [
   {
     icon: <Zap className="w-8 h-8" />,
-    title: "Lightning Fast",
-    description: "Pages load in under 2 seconds for optimal conversion rates. Your customers will never wait.",
+    title: "Ultra rapide",
+    description: "Pages qui chargent en moins de 2 secondes pour un taux de conversion optimal.",
     color: "bg-primary-200",
     stat: "< 2s",
-    statLabel: "Load Time",
+    statLabel: "Chargement",
     offset: "ml-0",
   },
   {
     icon: <Shield className="w-8 h-8" />,
-    title: "Secure by Default",
-    description: "SSL certificates, PCI compliance, and fraud protection included out of the box.",
+    title: "Sécurisé par défaut",
+    description: "Certificats SSL, conformité PCI et protection anti-fraude inclus.",
     color: "bg-secondary-200",
     stat: "100%",
-    statLabel: "Protected",
+    statLabel: "Protégé",
     offset: "ml-8 sm:ml-16 md:ml-24",
   },
   {
     icon: <Clock className="w-8 h-8" />,
-    title: "99.9% Uptime",
-    description: "Reliable infrastructure that keeps your store running 24/7 without interruptions.",
+    title: "99.9% de disponibilité",
+    description: "Infrastructure fiable qui garde votre boutique en ligne 24h/24.",
     color: "bg-tertiary-200",
     stat: "24/7",
-    statLabel: "Available",
+    statLabel: "Disponible",
+    offset: "ml-16 sm:ml-32 md:ml-48",
+  },
+];
+
+const buyerFeatures = [
+  {
+    icon: <Zap className="w-8 h-8" />,
+    title: "Navigation fluide",
+    description: "Une expérience d'achat rapide et sans accroc sur tous vos appareils.",
+    color: "bg-primary-200",
+    stat: "< 2s",
+    statLabel: "Chargement",
+    offset: "ml-0",
+  },
+  {
+    icon: <Shield className="w-8 h-8" />,
+    title: "Transactions sûres",
+    description: "Chaque paiement est crypté et protégé. Vos données bancaires sont en sécurité.",
+    color: "bg-secondary-200",
+    stat: "100%",
+    statLabel: "Sécurisé",
+    offset: "ml-8 sm:ml-16 md:ml-24",
+  },
+  {
+    icon: <Clock className="w-8 h-8" />,
+    title: "Disponible 24/7",
+    description: "Achetez à tout moment, jour ou nuit, depuis n'importe où en Afrique.",
+    color: "bg-tertiary-200",
+    stat: "24/7",
+    statLabel: "Disponible",
     offset: "ml-16 sm:ml-32 md:ml-48",
   },
 ];
 
 export default function FastReliable() {
+  const { audience } = useAudience();
+  const features = audience === 'seller' ? sellerFeatures : buyerFeatures;
+
   return (
     <div className="relative bg-white overflow-hidden">
       <div className="relative container mx-auto max-w-[1344px]">
         <div className="px-5 py-20 flex flex-col gap-12 sm:px-10 md:py-28">
-          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -49,14 +82,17 @@ export default function FastReliable() {
           >
             <Subtitle style="mb-2 text-primary-100">PERFORMANCE</Subtitle>
             <SubHead color="text-primary-100" style="mb-[18px] sm:w-8/12 lg:w-6/12">
-              Very fast and truly reliable
+              {audience === 'seller'
+                ? 'Rapide et fiable pour votre business'
+                : 'Expérience fluide et sécurisée'}
             </SubHead>
             <Paragraph fontSize="text-sm" color="text-primary-300" style="sm:w-4/5 lg:w-2/5">
-              Built on modern infrastructure to deliver blazing-fast performance your customers deserve.
+              {audience === 'seller'
+                ? 'Infrastructure moderne pour des performances optimales que vos clients méritent.'
+                : 'Une plateforme pensée pour vous offrir le meilleur confort d\'achat.'}
             </Paragraph>
           </motion.div>
 
-          {/* Main Video Card */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -76,15 +112,18 @@ export default function FastReliable() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
                 <div>
-                  <p className="text-white/60 text-sm font-body">Watch Demo</p>
-                  <h3 className="text-white text-xl font-head font-bold">See Drawcaf in Action</h3>
+                  <p className="text-white/60 text-sm font-body">
+                    {audience === 'seller' ? 'Voir la démo' : 'Comment ça marche'}
+                  </p>
+                  <h3 className="text-white text-xl font-head font-bold">
+                    {audience === 'seller' ? 'Drawcaf en action' : 'Votre prochain achat'}
+                  </h3>
                 </div>
                 <span className="hidden sm:block text-white/40 text-sm font-body">2:34</span>
               </div>
             </div>
           </motion.div>
 
-          {/* Feature Cards - offset to the right */}
           <div className="flex flex-col gap-4">
             {features.map((item, index) => (
               <motion.div

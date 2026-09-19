@@ -2,27 +2,49 @@ import Subtitle from "../Atoms/subtitle";
 import SubHead from "../Atoms/subhead";
 import Paragraph from "../Atoms/paragraph";
 import { motion } from "framer-motion";
-import { User, Building2, Factory } from "lucide-react";
+import { useAudience } from "../../context/AudienceContext";
+import { User, Building2, Factory, Heart, Sparkles, Gem } from "lucide-react";
 
-const audiences = [
+const sellerAudiences = [
   {
     icon: <User className="w-8 h-8" />,
     title: "Entrepreneurs",
-    description: "Start your online business with minimal investment and no technical skills.",
+    description: "Lancez votre business en ligne avec un investissement minimal.",
   },
   {
     icon: <Building2 className="w-8 h-8" />,
-    title: "Small Businesses",
-    description: "Scale your existing business with powerful ecommerce tools and analytics.",
+    title: "PME",
+    description: "Développez votre activité avec des outils ecommerce puissants.",
   },
   {
     icon: <Factory className="w-8 h-8" />,
-    title: "Enterprise",
-    description: "Custom solutions for large companies with advanced needs and high volume.",
+    title: "Grandes entreprises",
+    description: "Solutions sur mesure pour les besoins avancés et gros volumes.",
+  },
+];
+
+const buyerAudiences = [
+  {
+    icon: <Heart className="w-8 h-8" />,
+    title: "Amoureux de l'artisanat",
+    description: "Trouvez des pièces uniques faites par des artisans talentueux africains.",
+  },
+  {
+    icon: <Sparkles className="w-8 h-8" />,
+    title: "Passionnés de nouveautés",
+    description: "Soyez les premiers à découvrir les dernières tendances créatives.",
+  },
+  {
+    icon: <Gem className="w-8 h-8" />,
+    title: "Collectionneurs",
+    description: "Constituez une collection de créations rares et authentiques.",
   },
 ];
 
 export default function ForEveryone() {
+  const { audience } = useAudience();
+  const audiences = audience === 'seller' ? sellerAudiences : buyerAudiences;
+
   return (
     <div className="container mx-auto max-w-[1344px]">
       <div className="px-5 py-20 flex flex-col gap-14 sm:px-10 md:py-28">
@@ -33,12 +55,18 @@ export default function ForEveryone() {
           transition={{ duration: 0.8 }}
           className="text-center flex flex-col items-center"
         >
-          <Subtitle style="mb-2">FOR EVERYONE</Subtitle>
+          <Subtitle style="mb-2">
+            {audience === 'seller' ? 'POUR TOUS LES VENDEURS' : 'POUR TOUS LES ACHETEURS'}
+          </Subtitle>
           <SubHead style="mb-[18px] sm:w-8/12 lg:w-6/12">
-            From entrepreneurs to large enterprises
+            {audience === 'seller'
+              ? 'Des entrepreneurs aux grandes entreprises'
+              : 'Des passionnés aux collectionneurs'}
           </SubHead>
           <Paragraph fontSize="text-sm" color="text-black-400" style="sm:w-4/5 lg:w-2/5">
-            Drawcaf adapts to your needs, whether you are just starting out or managing a large-scale operation.
+            {audience === 'seller'
+              ? 'Drawcaf s\'adapte à vos besoins, que vous démarciez ou que vous gériez une grande activité.'
+              : 'Que vous cherchiez un cadeau ou une pièce de collection, Drawcaf a ce qu\'il vous faut.'}
           </Paragraph>
         </motion.div>
 

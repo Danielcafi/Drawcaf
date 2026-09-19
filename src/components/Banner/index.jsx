@@ -1,8 +1,11 @@
 import SubHead from "../Atoms/subhead";
 import Paragraph from "../Atoms/paragraph";
 import { motion } from "framer-motion";
+import { useAudience } from "../../context/AudienceContext";
 
 export default function Banner() {
+  const { audience } = useAudience();
+
   const bannerContainer = {
     visible: { opacity: 1, y: 0, transition: { duration: 1 } },
     hidden: { opacity: 0, y: 100 },
@@ -25,15 +28,17 @@ export default function Banner() {
             className="text-center space-y-[18px] flex flex-col items-center"
           >
             <SubHead color="text-white" style="sm:w-4/5 md:w-9/12 lg:w-9/12">
-              Managing your ecommerce business on the go is easy.
+              {audience === 'seller'
+                ? 'Gérez votre business créatif partout, tout le temps.'
+                : 'Shopping en toute confiance, partout en Afrique.'}
             </SubHead>
             <Paragraph
               color="text-white/70"
               style="sm:w-11/12 md:w-9/12 lg:w-1/2"
             >
-              Our customers enjoy complete freedom of doing business online by
-              managing every aspect of their online store from their mobile and
-              web devices.
+              {audience === 'seller'
+                ? 'Gérez chaque aspect de votre boutique en ligne depuis votre téléphone ou votre ordinateur, où que vous soyez.'
+                : 'Explorez des milliers de produits créatifs, comparez les prix et recevez vos commandes directement chez vous.'}
             </Paragraph>
           </motion.section>
           <div className="w-full flex justify-center">

@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import { ShoppingCart, Globe, Smartphone, Store } from "lucide-react";
 
 const channels = [
-  { icon: <ShoppingCart className="w-6 h-6" />, name: "Online Store" },
-  { icon: <Smartphone className="w-6 h-6" />, name: "Mobile App" },
-  { icon: <Globe className="w-6 h-6" />, name: "Social Media" },
+  { icon: <ShoppingCart className="w-6 h-6" />, name: "Boutique en ligne" },
+  { icon: <Smartphone className="w-6 h-6" />, name: "Application mobile" },
+  { icon: <Globe className="w-6 h-6" />, name: "Réseaux sociaux" },
   { icon: <Store className="w-6 h-6" />, name: "Marketplaces" },
 ];
 
@@ -22,12 +22,12 @@ export default function MultiChannel() {
           transition={{ duration: 0.8 }}
           className="flex flex-col gap-6 lg:w-1/2"
         >
-          <Subtitle> MULTI-CHANNEL SELLING</Subtitle>
+          <Subtitle>VENTE MULTI-CANAUX</Subtitle>
           <SubHead>
-            Sell more, on more channels
+            Vendez plus, sur plus de canaux
           </SubHead>
           <Paragraph fontSize="text-sm" color="text-black-400">
-            Reach your customers wherever they are. Manage all your sales channels from a single dashboard and maximize your revenue.
+            Atteignez vos clients là où ils se trouvent. Gérez tous vos canaux de vente depuis un seul tableau de bord et maximisez vos revenus.
           </Paragraph>
         </motion.div>
 

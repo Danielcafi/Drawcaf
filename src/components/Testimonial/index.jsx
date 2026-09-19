@@ -1,16 +1,44 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper";
-
-// Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
-
 import { useRef } from "react";
 import TestimonialItem from "./testimonialItem";
+
+const sellerTestimonials = [
+  {
+    name: "Amina Bello",
+    role: "Créatrice de bijoux, Porto-Novo",
+    quote: "Drawcaf a transformé mon petit atelier en une boutique en ligne pro. En 3 mois, j'ai doublé mes ventes !",
+    img: "/testimonial.png",
+  },
+  {
+    name: "Kofi Mensah",
+    role: "Artisan textile, Lomé",
+    quote: "La plateforme est simple et les paiements Mobile Money fonctionnent parfaitement. Je recommande à tous les artisans.",
+    img: "/testimonial.png",
+  },
+];
+
+const buyerTestimonials = [
+  {
+    name: "Fatou Diallo",
+    role: "Acheteuse, Cotonou",
+    quote: "J'ai trouvé des bijoux incroyables sur Drawcaf. La livraison était rapide et le paiement sécurisé. Je suis conquise !",
+    img: "/testimonial.png",
+  },
+  {
+    name: "Ibrahim Touré",
+    role: "Collectionneur, Abidjan",
+    quote: "La qualité des produits est exceptionnelle. Chaque pièce raconte une histoire. Drawcaf est devenu ma boutique préférée.",
+    img: "/testimonial.png",
+  },
+];
 
 export default function Testimonial() {
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
+  const testimonials = sellerTestimonials;
 
   return (
     <div className="bg-tertiary-300">
@@ -28,12 +56,11 @@ export default function Testimonial() {
             }}
             className="relative"
           >
-            <SwiperSlide>
-              <TestimonialItem/>
-            </SwiperSlide>
-            <SwiperSlide>
-              <TestimonialItem/>
-            </SwiperSlide>
+            {testimonials.map((t, i) => (
+              <SwiperSlide key={i}>
+                <TestimonialItem testimonial={t} />
+              </SwiperSlide>
+            ))}
             <div className="absolute bottom-0 right-0 sm:right-10 z-10 flex items-center gap-6">
               <button
                 className="testimonial-button prev"

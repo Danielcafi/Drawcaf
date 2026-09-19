@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useProductStore, useCartStore } from '../../store'
+import { useProductStore, useCartStore, useAuthStore } from '../../store'
 import { motion } from 'framer-motion'
 import { 
   ShoppingCart, 
@@ -21,6 +21,7 @@ export default function ProductPage() {
   const navigate = useNavigate()
   const { currentProduct, fetchProductBySlug } = useProductStore()
   const { addItem } = useCartStore()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(null)
@@ -43,6 +44,10 @@ export default function ProductPage() {
   }
   
   const handleAddToCart = () => {
+    if (!user) {
+      navigate('/login')
+      return
+    }
     setAddingToCart(true)
     addItem(currentProduct, quantity, selectedVariant)
     setTimeout(() => setAddingToCart(false), 1000)

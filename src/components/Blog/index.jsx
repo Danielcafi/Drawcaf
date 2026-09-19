@@ -9,12 +9,12 @@ export default function Blog() {
         {/* Head Content */}
         <div className="flex flex-col gap-8 md:flex-row md:justify-between md:items-end">
           <div className="flex flex-col gap-[18px] md:w-8/12 lg:w-auto">
-            <SubHead>Read our blog</SubHead>
-            <Paragraph>We give actionable tips, strategies, and techniques to grow your business.</Paragraph>
+            <SubHead>Notre blog</SubHead>
+            <Paragraph>Conseils pratiques, stratégies et techniques pour développer votre business.</Paragraph>
           </div>
           <Button buttonStyle="bg-primary-100 text-white">
             <div className="flex gap-2.5 items-center">
-              View All
+              Tout voir
               <img src="anchor-right.svg" alt="anchor" />
             </div>
           </Button>
@@ -26,22 +26,22 @@ export default function Blog() {
             <div className="overflow-hidden">
               <img className="w-full h-auto object-cover hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer" src="/blog-1.png" alt="thumbnail" />
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-black-100">Improve your business ecommerce management</h3>
-            <a className="underline text-black-100 text-lg" href="#">Read More</a>
+            <h3 className="text-2xl md:text-3xl font-bold text-black-100">Améliorez la gestion de votre business ecommerce</h3>
+            <a className="underline text-black-100 text-lg" href="#">Lire la suite</a>
           </section>
           <section className="flex flex-col gap-6">
             <div className="overflow-hidden">
               <img className="w-full h-auto object-cover hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer" src="/blog-2.png" alt="thumbnail" />
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-black-100">Ecommerce Hosting: What to Look for in a Host</h3>
-            <a className="underline text-black-100 w-fit text-lg" href="#">Read More</a>
+            <h3 className="text-2xl md:text-3xl font-bold text-black-100">Hébergement ecommerce : comment choisir ?</h3>
+            <a className="underline text-black-100 w-fit text-lg" href="#">Lire la suite</a>
           </section>
           <section className="hidden lg:flex flex-col gap-6">
             <div className="overflow-hidden">
               <img className="w-full h-auto object-cover hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer" src="/blog-1.png" alt="thumbnail" />
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-black-100">Improve your business ecommerce management</h3>
-            <a className="underline text-black-100 text-lg" href="#">Read More</a>
+            <h3 className="text-2xl md:text-3xl font-bold text-black-100">Tendances ecommerce à suivre en 2026</h3>
+            <a className="underline text-black-100 text-lg" href="#">Lire la suite</a>
           </section>
         </div>
       </div>

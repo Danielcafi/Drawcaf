@@ -134,12 +134,12 @@ export default function Footer() {
                 <Link to="/contact" className="footer-link hover:text-white transition-colors">
                   Contact
                 </Link>
-                <a href="#" className="footer-link hover:text-white transition-colors">
+                <Link to="/conditions" className="footer-link hover:text-white transition-colors">
                   Conditions
-                </a>
-                <a href="#" className="footer-link hover:text-white transition-colors">
+                </Link>
+                <Link to="/confidentialite" className="footer-link hover:text-white transition-colors">
                   Confidentialité
-                </a>
+                </Link>
               </div>
             </div>
           </div>

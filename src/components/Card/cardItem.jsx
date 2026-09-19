@@ -31,7 +31,7 @@ export default function CardItem({
         <Paragraph style="mb-[30px] w-4/5 sm:w-8/12 md:w-4/5 lg:w-8/12">
           {paragraph}
         </Paragraph>
-        <Button>Buy Now</Button>
+        <Button>Acheter</Button>
       </motion.section>
       <div
         className={`${

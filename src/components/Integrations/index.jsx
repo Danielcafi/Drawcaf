@@ -5,14 +5,14 @@ import { motion } from "framer-motion";
 import { CreditCard, Truck, Mail, BarChart3, Users, Bell } from "lucide-react";
 
 const integrations = [
-  { icon: <CreditCard className="w-8 h-8" />, name: "Stripe", category: "Payment" },
-  { icon: <CreditCard className="w-8 h-8" />, name: "PayPal", category: "Payment" },
-  { icon: <Truck className="w-8 h-8" />, name: "ShipStation", category: "Shipping" },
+  { icon: <CreditCard className="w-8 h-8" />, name: "Stripe", category: "Paiement" },
+  { icon: <CreditCard className="w-8 h-8" />, name: "PayPal", category: "Paiement" },
+  { icon: <Truck className="w-8 h-8" />, name: "ShipStation", category: "Livraison" },
   { icon: <Mail className="w-8 h-8" />, name: "Mailchimp", category: "Marketing" },
-  { icon: <BarChart3 className="w-8 h-8" />, name: "Google Analytics", category: "Analytics" },
-  { icon: <Users className="w-8 h-8" />, name: "Zapier", category: "Automation" },
+  { icon: <BarChart3 className="w-8 h-8" />, name: "Google Analytics", category: "Analyse" },
+  { icon: <Users className="w-8 h-8" />, name: "Zapier", category: "Automatisation" },
   { icon: <Bell className="w-8 h-8" />, name: "Slack", category: "Notifications" },
-  { icon: <CreditCard className="w-8 h-8" />, name: "Square", category: "Payment" },
+  { icon: <CreditCard className="w-8 h-8" />, name: "Square", category: "Paiement" },
 ];
 
 export default function Integrations() {
@@ -27,12 +27,12 @@ export default function Integrations() {
             transition={{ duration: 0.8 }}
             className="text-center flex flex-col items-center"
           >
-            <Subtitle style="mb-2">INTEGRATIONS</Subtitle>
+            <Subtitle style="mb-2">INTÉGRATIONS</Subtitle>
             <SubHead style="mb-[18px] sm:w-8/12 lg:w-6/12">
-              Connect with your favorite tools
+              Connectez vos outils préférés
             </SubHead>
             <Paragraph fontSize="text-sm" color="text-black-400" style="sm:w-4/5 lg:w-2/5">
-              Seamlessly integrate with the tools you already use to run your business.
+              Intégrez facilement les outils que vous utilisez déjà pour gérer votre business.
             </Paragraph>
           </motion.div>
 

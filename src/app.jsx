@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore, useStoreStore } from './store'
 import { supabase } from './lib/supabase'
+import { AudienceProvider } from './context/AudienceContext'
 
 // Landing Page
 import Navbar from './components/Navbar'
@@ -9,13 +10,12 @@ import Main from './components/Main'
 import Banner from './components/Banner'
 import Stats from './components/Stats'
 import Card from './components/Card'
-import MultiChannel from './components/MultiChannel'
 import GlobalReach from './components/GlobalReach'
 import ForEveryone from './components/ForEveryone'
 import FastReliable from './components/FastReliable'
 import Integrations from './components/Integrations'
 import Testimonial from './components/Testimonial'
-import Pricing from './components/Pricing'
+import FeaturedProducts from './components/FeaturedProducts'
 import Blog from './components/Blog'
 import FinalCTA from './components/FinalCTA'
 import Footer from './components/Footer'
@@ -65,6 +65,10 @@ import AboutPage from './components/Marketing/AboutPage'
 import ContactPage from './components/Marketing/ContactPage'
 import PricingPage from './components/Marketing/PricingPage'
 
+// Legal Pages
+import TermsPage from './pages/TermsPage'
+import PrivacyPage from './pages/PrivacyPage'
+
 // Receipt Page
 import ReceiptPage from './components/Receipt/ReceiptPage'
 
@@ -78,25 +82,24 @@ import PaymentCallback from './pages/PaymentCallback'
 // Landing Page Component
 function LandingPage() {
   return (
-    <>
+    <AudienceProvider>
       <Navbar />
       <div className="pt-16 md:pt-20">
         <Main />
         <Stats />
+        <FeaturedProducts />
         <Banner />
         <Card />
-        <MultiChannel />
         <GlobalReach />
         <ForEveryone />
         <FastReliable />
         <Integrations />
         <Testimonial />
-        <Pricing />
         <Blog />
         <FinalCTA />
         <Footer />
       </div>
-    </>
+    </AudienceProvider>
   )
 }
 
@@ -344,6 +347,10 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/pricing" element={<PricingPage />} />
+
+        {/* Legal Routes */}
+        <Route path="/conditions" element={<TermsPage />} />
+        <Route path="/confidentialite" element={<PrivacyPage />} />
 
         {/* Receipt Route */}
         <Route path="/receipt/:id" element={<ReceiptPage />} />
