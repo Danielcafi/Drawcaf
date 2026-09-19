@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useStoreStore, useAuthStore } from '../../store'
 import { supabase } from '../../lib/supabase'
-import { MessageSquare, Send, User, Search } from 'lucide-react'
+import { MessageSquare, Send, User, Search, Package } from 'lucide-react'
 
 export default function MessagesPage() {
   const [conversations, setConversations] = useState([])
@@ -9,15 +10,22 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
+  const [sending, setSending] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const messagesEndRef = useRef(null)
+  const location = useLocation()
   const { currentStore } = useStoreStore()
-  const { profile } = useAuthStore()
+  const { user, profile } = useAuthStore()
+
+  const isSeller = !!currentStore
 
   useEffect(() => {
-    if (currentStore) {
+    setSelectedConversation(null)
+    setMessages([])
+    if (user) {
       fetchConversations()
     }
-  }, [currentStore])
+  }, [location.key, user?.id])
 
   useEffect(() => {
     if (selectedConversation) {
@@ -25,18 +33,63 @@ export default function MessagesPage() {
     }
   }, [selectedConversation])
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
   const fetchConversations = async () => {
+    setLoading(true)
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('conversations')
         .select('*')
-        .eq('store_id', currentStore.id)
-        .order('updated_at', { ascending: false })
+
+      if (isSeller) {
+        query = query.eq('store_id', currentStore.id)
+      } else {
+        query = query.eq('buyer_id', user.id)
+      }
+
+      const { data, error } = await query.order('last_message_at', { ascending: false, nullsFirst: false })
 
       if (error) throw error
-      setConversations(data || [])
+
+      const enriched = await Promise.all(
+        (data || []).map(async (conv) => {
+          const otherUserId = isSeller ? conv.buyer_id : conv.seller_id
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('full_name, avatar_url')
+            .eq('id', otherUserId)
+            .single()
+
+          const { data: storeData } = await supabase
+            .from('stores')
+            .select('name, logo_url')
+            .eq('id', conv.store_id)
+            .single()
+
+          const { data: productData } = await supabase
+            .from('products')
+            .select('title, price')
+            .eq('id', conv.product_id)
+            .single()
+
+          return {
+            ...conv,
+            otherName: profileData?.full_name || 'Utilisateur',
+            otherAvatar: profileData?.avatar_url,
+            storeName: storeData?.name || 'Boutique',
+            storeLogo: storeData?.logo_url,
+            productName: productData?.title,
+            productPrice: productData?.price,
+          }
+        })
+      )
+
+      setConversations(enriched)
     } catch (err) {
-      console.error('Error fetching conversations:', err)
+      console.error('Erreur chargement conversations:', err)
     } finally {
       setLoading(false)
     }
@@ -52,15 +105,21 @@ export default function MessagesPage() {
 
       if (error) throw error
       setMessages(data || [])
+
+      await supabase
+        .from('conversations')
+        .update({ is_read: true })
+        .eq('id', conversationId)
     } catch (err) {
-      console.error('Error fetching messages:', err)
+      console.error('Erreur chargement messages:', err)
     }
   }
 
   const sendMessage = async (e) => {
     e.preventDefault()
-    if (!newMessage.trim() || !selectedConversation) return
+    if (!newMessage.trim() || !selectedConversation || sending) return
 
+    setSending(true)
     try {
       const { error } = await supabase
         .from('messages')
@@ -71,15 +130,29 @@ export default function MessagesPage() {
         })
 
       if (error) throw error
+
+      await supabase
+        .from('conversations')
+        .update({
+          last_message: newMessage.trim(),
+          last_message_at: new Date().toISOString(),
+          is_read: false,
+        })
+        .eq('id', selectedConversation.id)
+
       setNewMessage('')
       fetchMessages(selectedConversation.id)
+      fetchConversations()
     } catch (err) {
-      console.error('Error sending message:', err)
+      console.error('Erreur envoi message:', err)
+    } finally {
+      setSending(false)
     }
   }
 
   const filteredConversations = conversations.filter(conv =>
-    conv.buyer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conv.otherName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conv.storeName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     conv.last_message?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
@@ -96,7 +169,9 @@ export default function MessagesPage() {
       {/* Conversations List */}
       <div className="w-80 border-r border-gray-100 flex flex-col">
         <div className="p-4 border-b border-gray-100">
-          <h2 className="font-bold font-head mb-3">Messages</h2>
+          <h2 className="font-bold font-head mb-3">
+            Messages {isSeller ? '(Vendeur)' : '(Acheteur)'}
+          </h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -121,19 +196,28 @@ export default function MessagesPage() {
                 onClick={() => setSelectedConversation(conv)}
                 className={`w-full p-4 text-left hover:bg-gray-50 border-b border-gray-50 transition-colors ${
                   selectedConversation?.id === conv.id ? 'bg-primary-50' : ''
-                }`}
+                } ${!conv.is_read && selectedConversation?.id !== conv.id ? 'bg-blue-50' : ''}`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                    <User className="w-5 h-5 text-gray-500" />
+                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
+                    {conv.otherAvatar ? (
+                      <img src={conv.otherAvatar} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-5 h-5 text-gray-500" />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate">{conv.buyer_name}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-sm truncate">{conv.otherName}</p>
+                      {conv.last_message_at && (
+                        <span className="text-xs text-gray-400 shrink-0 ml-2">
+                          {new Date(conv.last_message_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400 truncate">{conv.storeName}</p>
                     <p className="text-xs text-gray-500 truncate">{conv.last_message || 'Aucun message'}</p>
                   </div>
-                  <span className="text-xs text-gray-400">
-                    {new Date(conv.updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                  </span>
                 </div>
               </button>
             ))
@@ -144,10 +228,38 @@ export default function MessagesPage() {
       {/* Messages Area */}
       {selectedConversation ? (
         <div className="flex-1 flex flex-col">
-          <div className="p-4 border-b border-gray-100">
-            <h3 className="font-medium">{selectedConversation.buyer_name}</h3>
+          {/* Header */}
+          <div className="p-4 border-b border-gray-100 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
+              {selectedConversation.otherAvatar ? (
+                <img src={selectedConversation.otherAvatar} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-5 h-5 text-gray-500" />
+              )}
+            </div>
+            <div>
+              <p className="font-medium text-sm">{selectedConversation.otherName}</p>
+              <p className="text-xs text-gray-400">{selectedConversation.storeName}</p>
+            </div>
+            {selectedConversation.productName && (
+              <div className="ml-auto flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5">
+                <Package className="w-4 h-4 text-gray-400" />
+                <span className="text-xs text-gray-600 truncate max-w-[150px]">{selectedConversation.productName}</span>
+                {selectedConversation.productPrice && (
+                  <span className="text-xs font-medium text-primary-100">{selectedConversation.productPrice.toLocaleString('fr-FR')} XOF</span>
+                )}
+              </div>
+            )}
           </div>
+
+          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.length === 0 && (
+              <div className="text-center py-8">
+                <MessageSquare className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">Commencez la conversation</p>
+              </div>
+            )}
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -167,7 +279,10 @@ export default function MessagesPage() {
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
+
+          {/* Send Form */}
           <form onSubmit={sendMessage} className="p-4 border-t border-gray-100">
             <div className="flex gap-2">
               <input
@@ -179,7 +294,7 @@ export default function MessagesPage() {
               />
               <button
                 type="submit"
-                disabled={!newMessage.trim()}
+                disabled={!newMessage.trim() || sending}
                 className="bg-primary-100 text-white px-4 py-2 rounded-lg hover:bg-primary-300 transition-colors disabled:opacity-50"
               >
                 <Send className="w-5 h-5" />

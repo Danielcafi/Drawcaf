@@ -346,11 +346,14 @@ CREATE POLICY "Buyers can create reviews" ON reviews FOR INSERT WITH CHECK (auth
 CREATE POLICY "Buyers can update own reviews" ON reviews FOR UPDATE USING (auth.uid() = buyer_id);
 CREATE POLICY "Buyers can delete own reviews" ON reviews FOR DELETE USING (auth.uid() = buyer_id);
 
--- Conversations: participants can view
+-- Conversations: participants can view, create and update
 CREATE POLICY "Users can view own conversations" ON conversations FOR SELECT USING (
   auth.uid() = buyer_id OR auth.uid() = seller_id
 );
 CREATE POLICY "Buyers can create conversations" ON conversations FOR INSERT WITH CHECK (auth.uid() = buyer_id);
+CREATE POLICY "Participants can update conversations" ON conversations FOR UPDATE USING (
+  auth.uid() = buyer_id OR auth.uid() = seller_id
+);
 
 -- Messages: conversation participants can view and create
 CREATE POLICY "Users can view own messages" ON messages FOR SELECT USING (
