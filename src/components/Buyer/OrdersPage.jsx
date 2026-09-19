@@ -154,7 +154,7 @@ export default function OrdersPage() {
                 <div className="flex items-center gap-4">
                   {getStatusBadge(order.status)}
                   <div className="text-right">
-                    <p className="font-bold">{order.total.toFixed(2)} EUR</p>
+                    <p className="font-bold">{order.total.toLocaleString('fr-FR')} XOF</p>
                   </div>
                 </div>
               </div>
@@ -195,7 +195,7 @@ export default function OrdersPage() {
                         <p className="text-sm font-medium truncate">{item.title}</p>
                         <p className="text-xs text-gray-500">Qte: {item.quantity}</p>
                       </div>
-                      <p className="text-sm font-medium">{(item.price * item.quantity).toFixed(2)} EUR</p>
+                      <p className="text-sm font-medium">{(item.price * item.quantity).toLocaleString('fr-FR')} XOF</p>
                     </div>
                   ))}
                   {order.order_items?.length > 3 && (

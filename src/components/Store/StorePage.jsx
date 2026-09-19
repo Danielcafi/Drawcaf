@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { useStoreStore, useProductStore } from '../../store'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useStoreStore, useProductStore, useAuthStore } from '../../store'
+import { supabase } from '../../lib/supabase'
 import { getImageUrl } from '../../utils/image'
 import { motion } from 'framer-motion'
 import { 
@@ -12,13 +13,16 @@ import {
   Filter,
   Grid,
   List,
-  User
+  User,
+  MessageSquare
 } from 'lucide-react'
 
 export default function StorePage() {
   const { slug } = useParams()
+  const navigate = useNavigate()
   const { currentStore, fetchStoreBySlug } = useStoreStore()
   const { products, fetchPublicProducts } = useProductStore()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [viewMode, setViewMode] = useState('grid')
@@ -42,6 +46,38 @@ export default function StorePage() {
   const filteredProducts = products.filter(product =>
     product.title.toLowerCase().includes(search.toLowerCase())
   )
+
+  const handleContactSeller = async () => {
+    if (!user) {
+      navigate('/login')
+      return
+    }
+    try {
+      const { data: existing } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('buyer_id', user.id)
+        .eq('store_id', currentStore.id)
+        .single()
+
+      if (existing) {
+        navigate('/compte/messages')
+        return
+      }
+
+      const { error } = await supabase.from('conversations').insert({
+        buyer_id: user.id,
+        seller_id: currentStore.owner_id,
+        store_id: currentStore.id,
+        last_message: '',
+      })
+
+      if (error) throw error
+      navigate('/compte/messages')
+    } catch (err) {
+      console.error('Erreur création conversation:', err)
+    }
+  }
   
   if (loading) {
     return (
@@ -133,24 +169,33 @@ export default function StorePage() {
 
         {/* Vendeur */}
         {currentStore.owner && (
-          <div className="mb-8 flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100">
-            <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 shrink-0">
-              {currentStore.owner.avatar_url ? (
-                <img
-                  src={getImageUrl(currentStore.owner.avatar_url, currentStore.owner.updated_at)}
-                  alt={currentStore.owner.full_name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-primary-100 flex items-center justify-center">
-                  <User className="w-6 h-6 text-white" />
-                </div>
-              )}
+          <div className="mb-8 p-4 bg-white rounded-xl border border-gray-100">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 shrink-0">
+                {currentStore.owner.avatar_url ? (
+                  <img
+                    src={getImageUrl(currentStore.owner.avatar_url, currentStore.owner.updated_at)}
+                    alt={currentStore.owner.full_name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-primary-100 flex items-center justify-center">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase">Vendeur</p>
+                <p className="font-bold text-gray-900">{currentStore.owner.full_name}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-gray-400 uppercase">Vendeur</p>
-              <p className="font-bold text-gray-900">{currentStore.owner.full_name}</p>
-            </div>
+            <button
+              onClick={handleContactSeller}
+              className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 border border-primary-100 text-primary-100 rounded-lg hover:bg-primary-100 hover:text-white transition-colors text-sm font-medium"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Contacter le vendeur
+            </button>
           </div>
         )}
         
@@ -225,11 +270,11 @@ export default function StorePage() {
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="font-bold text-primary-100">
-                        {product.price.toFixed(2)} €
+                        {product.price.toLocaleString('fr-FR')} XOF
                       </span>
                       {product.compare_at_price && (
                         <span className="text-sm text-gray-400 line-through">
-                          {product.compare_at_price.toFixed(2)} €
+                          {product.compare_at_price.toLocaleString('fr-FR')} XOF
                         </span>
                       )}
                     </div>
@@ -277,11 +322,11 @@ export default function StorePage() {
                     </p>
                     <div className="flex items-center gap-3 mt-3">
                       <span className="font-bold text-xl text-primary-100">
-                        {product.price.toFixed(2)} €
+                        {product.price.toLocaleString('fr-FR')} XOF
                       </span>
                       {product.compare_at_price && (
                         <span className="text-gray-400 line-through">
-                          {product.compare_at_price.toFixed(2)} €
+                          {product.compare_at_price.toLocaleString('fr-FR')} XOF
                         </span>
                       )}
                     </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useProductStore, useCartStore, useAuthStore } from '../../store'
+import { supabase } from '../../lib/supabase'
 import { motion } from 'framer-motion'
 import { 
   ShoppingCart, 
@@ -51,6 +52,40 @@ export default function ProductPage() {
     setAddingToCart(true)
     addItem(currentProduct, quantity, selectedVariant)
     setTimeout(() => setAddingToCart(false), 1000)
+  }
+
+  const handleContactSeller = async () => {
+    if (!user) {
+      navigate('/login')
+      return
+    }
+    try {
+      const { data: existing } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('buyer_id', user.id)
+        .eq('store_id', currentProduct.store_id)
+        .eq('product_id', currentProduct.id)
+        .single()
+
+      if (existing) {
+        navigate('/compte/messages')
+        return
+      }
+
+      const { error } = await supabase.from('conversations').insert({
+        buyer_id: user.id,
+        seller_id: currentProduct.stores?.owner_id,
+        store_id: currentProduct.store_id,
+        product_id: currentProduct.id,
+        last_message: '',
+      })
+
+      if (error) throw error
+      navigate('/compte/messages')
+    } catch (err) {
+      console.error('Erreur création conversation:', err)
+    }
   }
   
   const handleQuantityChange = (delta) => {
@@ -163,11 +198,11 @@ export default function ProductPage() {
             
             <div className="flex items-center gap-4">
               <span className="text-3xl font-bold text-primary-100">
-                {currentProduct.price.toFixed(2)} €
+                {currentProduct.price.toLocaleString('fr-FR')} XOF
               </span>
               {currentProduct.compare_at_price && (
                 <span className="text-xl text-gray-400 line-through">
-                  {currentProduct.compare_at_price.toFixed(2)} €
+                  {currentProduct.compare_at_price.toLocaleString('fr-FR')} XOF
                 </span>
               )}
             </div>
@@ -234,7 +269,7 @@ export default function ProductPage() {
                         {variant.value}
                         {variant.price && (
                           <span className="ml-2 text-sm text-gray-500">
-                            +{variant.price.toFixed(2)} €
+                            +{variant.price.toLocaleString('fr-FR')} XOF
                           </span>
                         )}
                       </button>
@@ -295,33 +330,42 @@ export default function ProductPage() {
           
           {/* Seller Info */}
           {store && (
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-              <Link
-                to={`/boutique/${store.slug}`}
-                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            <div className="p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center justify-between">
+                <Link
+                  to={`/boutique/${store.slug}`}
+                  className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                >
+                  <div className="w-12 h-12 rounded-lg bg-white overflow-hidden">
+                    {store.logo_url ? (
+                      <img src={store.logo_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-primary-100 flex items-center justify-center">
+                        <span className="text-lg font-bold text-white">
+                          {store.name.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-medium">{store.name}</p>
+                    <p className="text-sm text-gray-500">{store.total_sales} vente(s)</p>
+                  </div>
+                </Link>
+                <Link
+                  to={`/boutique/${store.slug}`}
+                  className="text-sm text-primary-100 hover:underline"
+                >
+                  Voir la boutique
+                </Link>
+              </div>
+              <button
+                onClick={handleContactSeller}
+                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 border border-primary-100 text-primary-100 rounded-lg hover:bg-primary-100 hover:text-white transition-colors text-sm font-medium"
               >
-                <div className="w-12 h-12 rounded-lg bg-white overflow-hidden">
-                  {store.logo_url ? (
-                    <img src={store.logo_url} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-primary-100 flex items-center justify-center">
-                      <span className="text-lg font-bold text-white">
-                        {store.name.charAt(0)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <p className="font-medium">{store.name}</p>
-                  <p className="text-sm text-gray-500">{store.total_sales} vente(s)</p>
-                </div>
-              </Link>
-              <Link
-                to={`/boutique/${store.slug}`}
-                className="text-sm text-primary-100 hover:underline"
-              >
-                Voir la boutique
-              </Link>
+                <MessageSquare className="w-4 h-4" />
+                Contacter le vendeur
+              </button>
             </div>
           )}
           

@@ -88,7 +88,7 @@ export default function PricingPage() {
               <h2 className="text-2xl font-bold font-head mb-2">{plan.name}</h2>
               <p className="text-gray-500 mb-4">{plan.description}</p>
               <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-5xl font-bold">{plan.price}€</span>
+                <span className="text-5xl font-bold">{plan.price} XOF</span>
                 <span className="text-gray-500">{plan.period}</span>
               </div>
               <ul className="space-y-4 mb-8">

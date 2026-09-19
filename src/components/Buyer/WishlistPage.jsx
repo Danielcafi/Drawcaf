@@ -112,7 +112,7 @@ export default function WishlistPage() {
                   
                   <div className="flex items-center justify-between">
                     <p className="font-bold text-lg text-primary-100">
-                      {item.product.price.toFixed(2)} €
+                      {item.product.price.toLocaleString('fr-FR')} XOF
                     </p>
                     
                     <div className="flex items-center gap-2">

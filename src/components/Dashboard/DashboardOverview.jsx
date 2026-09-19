@@ -136,7 +136,7 @@ export default function DashboardOverview() {
   const statCards = [
     {
       title: 'Revenus totaux',
-      value: `${stats.totalRevenue.toFixed(2)} €`,
+      value: `${stats.totalRevenue.toLocaleString('fr-FR')} XOF`,
       color: '#10B981', // green
       data: stats.trends?.revenue || []
     },
@@ -154,7 +154,7 @@ export default function DashboardOverview() {
     },
     {
       title: 'Panier moyen',
-      value: `${stats.avgOrderValue.toFixed(2)} €`,
+      value: `${stats.avgOrderValue.toLocaleString('fr-FR')} XOF`,
       color: '#F97316', // orange
       data: stats.trends?.avgCart || []
     }
@@ -298,10 +298,10 @@ export default function DashboardOverview() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
               <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} tickFormatter={(value) => `${value}€`} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} tickFormatter={(value) => `${value.toLocaleString('fr-FR')} XOF`} />
               <Tooltip 
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                formatter={(value) => [`${value.toFixed(2)} €`, 'Revenus']}
+                formatter={(value) => [`${value.toLocaleString('fr-FR')} XOF`, 'Revenus']}
               />
               <Area 
                 type="monotone" 
@@ -353,7 +353,7 @@ export default function DashboardOverview() {
                       {order.shipping_address?.name || 'Client'}
                     </td>
                     <td className="px-6 py-4 font-medium">
-                      {order.total.toFixed(2)} €
+                      {order.total.toLocaleString('fr-FR')} XOF
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>

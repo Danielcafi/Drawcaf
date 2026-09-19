@@ -15,7 +15,7 @@ export default function CartPage() {
   const navigate = useNavigate()
   
   const subtotal = getTotal()
-  const shipping = subtotal > 50 ? 0 : 5.99
+  const shipping = subtotal > 50000 ? 0 : 1000
   const total = subtotal + shipping
   
   if (items.length === 0) {
@@ -114,7 +114,7 @@ export default function CartPage() {
                   
                   {/* Price */}
                   <p className="font-bold text-lg">
-                    {(item.product.price * item.quantity).toFixed(2)} €
+                    {(item.product.price * item.quantity).toLocaleString('fr-FR')} XOF
                   </p>
                 </div>
               </div>
@@ -138,20 +138,20 @@ export default function CartPage() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Sous-total</span>
-                <span>{subtotal.toFixed(2)} €</span>
+                <span>{subtotal.toLocaleString('fr-FR')} XOF</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Livraison</span>
-                <span>{shipping === 0 ? 'Gratuit' : `${shipping.toFixed(2)} €`}</span>
+                <span>{shipping === 0 ? 'Gratuit' : `${shipping.toLocaleString('fr-FR')} XOF`}</span>
               </div>
               {shipping > 0 && (
                 <p className="text-xs text-green-600">
-                  Livraison gratuite à partir de 50 € d'achat
+                  Livraison gratuite à partir de 50 000 XOF d'achat
                 </p>
               )}
               <div className="border-t border-gray-200 pt-3 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>{total.toFixed(2)} €</span>
+                <span>{total.toLocaleString('fr-FR')} XOF</span>
               </div>
             </div>
             

@@ -164,7 +164,7 @@ export default function SearchPage() {
                         {product.title}
                       </h3>
                       <p className="font-bold text-primary-100">
-                        {product.price.toFixed(2)} €
+                        {product.price.toLocaleString('fr-FR')} XOF
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
                         {product.stores?.name}

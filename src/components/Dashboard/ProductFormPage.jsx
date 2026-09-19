@@ -303,7 +303,7 @@ export default function ProductFormPage() {
                   min="0"
                   required
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">XOF</span>
               </div>
             </div>
             
@@ -321,7 +321,7 @@ export default function ProductFormPage() {
                   step="0.01"
                   min="0"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">XOF</span>
               </div>
             </div>
           </div>

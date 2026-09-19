@@ -134,7 +134,7 @@ export default function OrdersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-medium">{order.total_amount} €</span>
+                      <span className="font-medium">{order.total_amount?.toLocaleString('fr-FR')} XOF</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}`}>

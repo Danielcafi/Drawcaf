@@ -52,7 +52,7 @@ export default function CheckoutPage() {
   const [receiptData, setReceiptData] = useState(null)
   
   const subtotal = getTotal()
-  const shipping = subtotal > 50 ? 0 : 5.99
+  const shipping = subtotal > 50000 ? 0 : 1000
   const total = subtotal + shipping
 
   const availableCities = getCitiesForCountry(country)
@@ -487,22 +487,22 @@ export default function CheckoutPage() {
                       <span className="text-gray-600">
                         {item.product.title} x{item.quantity}
                       </span>
-                      <span>{(item.product.price * item.quantity).toFixed(2)} €</span>
+                      <span>{(item.product.price * item.quantity).toLocaleString('fr-FR')} XOF</span>
                     </div>
                   ))}
                   <div className="border-t border-gray-200 pt-2 mt-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Sous-total</span>
-                      <span>{subtotal.toFixed(2)} €</span>
+                      <span>{subtotal.toLocaleString('fr-FR')} XOF</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Livraison</span>
-                      <span>{shipping === 0 ? 'Gratuit' : `${shipping.toFixed(2)} €`}</span>
+                      <span>{shipping === 0 ? 'Gratuit' : `${shipping.toLocaleString('fr-FR')} XOF`}</span>
                     </div>
                   </div>
                   <div className="border-t border-gray-200 pt-2 flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>{total.toFixed(2)} €</span>
+                    <span>{total.toLocaleString('fr-FR')} XOF</span>
                   </div>
                 </div>
               </div>
@@ -601,7 +601,7 @@ export default function CheckoutPage() {
                       Traitement en cours...
                     </>
                   ) : (
-                    `Payer ${total.toFixed(2)} €`
+                    `Payer ${total.toLocaleString('fr-FR')} XOF`
                   )}
                 </button>
               </form>

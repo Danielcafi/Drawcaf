@@ -129,10 +129,10 @@ export default function ProductsPage() {
                     <p className="text-sm text-gray-500 line-clamp-1">{product.description}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-bold text-lg">{product.price.toFixed(2)} €</p>
+                    <p className="font-bold text-lg">{product.price.toLocaleString('fr-FR')} XOF</p>
                     {product.compare_at_price && (
                       <p className="text-sm text-gray-400 line-through">
-                        {product.compare_at_price.toFixed(2)} €
+                        {product.compare_at_price.toLocaleString('fr-FR')} XOF
                       </p>
                     )}
                   </div>

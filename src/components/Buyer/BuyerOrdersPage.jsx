@@ -230,7 +230,7 @@ export default function BuyerOrdersPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right hidden sm:block">
-                      <p className="font-bold text-gray-900">{order.total?.toFixed(2)} EUR</p>
+                      <p className="font-bold text-gray-900">{order.total?.toLocaleString('fr-FR')} XOF</p>
                       <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(order.status)}`}>
                         {getStatusLabel(order.status)}
                       </span>
@@ -270,11 +270,11 @@ export default function BuyerOrdersPage() {
                               <div className="flex-1">
                                 <p className="font-medium text-sm text-gray-900">{item.title}</p>
                                 <p className="text-xs text-gray-500">
-                                  Qty: {item.quantity} x {item.price?.toFixed(2)} EUR
+                                  Qty: {item.quantity} x {item.price?.toLocaleString('fr-FR')} XOF
                                 </p>
                               </div>
                               <p className="font-medium text-sm text-gray-900">
-                                {(item.quantity * item.price)?.toFixed(2)} EUR
+                                {(item.quantity * item.price)?.toLocaleString('fr-FR')} XOF
                               </p>
                             </div>
                           ))}
@@ -300,15 +300,15 @@ export default function BuyerOrdersPage() {
                       <div className="border-t border-gray-100 pt-4">
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500">Sous-total</span>
-                          <span>{order.subtotal?.toFixed(2)} EUR</span>
+                          <span>{order.subtotal?.toLocaleString('fr-FR')} XOF</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500">Livraison</span>
-                          <span>{order.shipping_cost?.toFixed(2) || '0.00'} EUR</span>
+                          <span>{order.shipping_cost?.toLocaleString('fr-FR') || '0'} XOF</span>
                         </div>
                         <div className="flex justify-between font-bold text-lg mt-2">
                           <span>Total</span>
-                          <span>{order.total?.toFixed(2)} EUR</span>
+                          <span>{order.total?.toLocaleString('fr-FR')} XOF</span>
                         </div>
                       </div>
 

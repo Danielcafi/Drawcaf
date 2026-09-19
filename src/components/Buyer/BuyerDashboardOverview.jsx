@@ -132,7 +132,7 @@ export default function BuyerDashboardOverview() {
         {[
           {
             label: 'Total depense',
-            value: `${stats.totalSpent.toFixed(2)} EUR`,
+            value: `${stats.totalSpent.toLocaleString('fr-FR')} XOF`,
             icon: DollarSign,
             color: 'bg-green-100 text-green-600'
           },
@@ -217,7 +217,7 @@ export default function BuyerDashboardOverview() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900">{order.total?.toFixed(2)} EUR</p>
+                    <p className="font-bold text-gray-900">{order.total?.toLocaleString('fr-FR')} XOF</p>
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       order.status === 'delivered' ? 'bg-green-100 text-green-700' :
                       order.status === 'cancelled' ? 'bg-red-100 text-red-700' :

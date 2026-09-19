@@ -166,7 +166,7 @@ export default function BuyerAnalyticsPage() {
         {[
           {
             label: 'Total depense',
-            value: `${stats.totalSpent.toFixed(2)} EUR`,
+            value: `${stats.totalSpent.toLocaleString('fr-FR')} XOF`,
             icon: DollarSign,
             color: 'bg-green-100 text-green-600'
           },
@@ -178,7 +178,7 @@ export default function BuyerAnalyticsPage() {
           },
           {
             label: 'Panier moyen',
-            value: `${stats.avgOrderValue.toFixed(2)} EUR`,
+            value: `${stats.avgOrderValue.toLocaleString('fr-FR')} XOF`,
             icon: TrendingUp,
             color: 'bg-purple-100 text-purple-600'
           },
@@ -222,7 +222,7 @@ export default function BuyerAnalyticsPage() {
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
-                  formatter={(value) => [`${value.toFixed(2)} EUR`, 'Montant']}
+                  formatter={(value) => [`${value.toLocaleString('fr-FR')} XOF`, 'Montant']}
                   contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
                 />
                 <Bar dataKey="montant" fill="#1E3A8B" radius={[4, 4, 0, 0]} />
@@ -310,7 +310,7 @@ export default function BuyerAnalyticsPage() {
                   <p className="font-medium text-gray-900 truncate">{product.name}</p>
                   <p className="text-sm text-gray-500">{product.quantite} article(s)</p>
                 </div>
-                <p className="font-bold text-gray-900">{product.montant.toFixed(2)} EUR</p>
+                <p className="font-bold text-gray-900">{product.montant.toLocaleString('fr-FR')} XOF</p>
               </div>
             ))}
           </div>
