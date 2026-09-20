@@ -39,6 +39,8 @@ const useFedapayPayment = () => {
 
       const script = document.createElement('script')
       script.src = 'https://cdn.fedapay.com/checkout.js?v=1.1.7'
+      script.setAttribute('data-environment', 'sandbox')
+      script.setAttribute('data-public-key', FEDAPAY_CONFIG.publicKey)
       script.async = true
 
       script.onload = () => {

@@ -1,7 +1,7 @@
 export const FEDAPAY_CONFIG = {
   publicKey: import.meta.env.VITE_FEDAPAY_PUBLIC_KEY,
-  environment: import.meta.env.VITE_FEDAPAY_PUBLIC_KEY?.includes('sandbox') ? 'sandbox' : 'live',
-  baseUrl: 'https://api.fedapay.com/v1',
+  environment: 'sandbox',
+  baseUrl: 'https://sandbox-api.fedapay.com/v1',
   returnUrl: import.meta.env.VITE_FEDAPAY_RETURN_URL || 'https://drawcaf.vercel.app/payment/callback',
 }
 
