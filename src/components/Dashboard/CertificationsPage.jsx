@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useStoreStore, useAuthStore } from '../../store'
 import { supabase } from '../../lib/supabase'
+import { storageUpload } from '../../lib/storage'
 import { BadgeCheck, FileCheck2, Clock, XCircle, Upload, Trash2, ExternalLink } from 'lucide-react'
 
 const DOCUMENT_TYPES = [
@@ -99,15 +100,7 @@ export default function CertificationsPage() {
         const fileName = `cert_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`
         const filePath = `certifications/${profile?.id || currentStore.owner_id}/${fileName}`
 
-        const { error: uploadError } = await supabase.storage
-          .from('drawcaf')
-          .upload(filePath, doc.file)
-
-        if (uploadError) throw uploadError
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('drawcaf')
-          .getPublicUrl(filePath)
+        const publicUrl = await storageUpload(filePath, doc.file)
 
         const { error: insertError } = await supabase
           .from('store_certifications')

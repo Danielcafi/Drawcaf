@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useStoreStore, useProductStore } from '../../store'
 import { supabase } from '../../lib/supabase'
+import { storageUpload, storageRemove } from '../../lib/storage'
 import { motion } from 'framer-motion'
 import { 
   ArrowLeft, 
@@ -75,15 +76,7 @@ export default function ProductFormPage() {
         const fileName = `${Math.random()}.${fileExt}`
         const filePath = `products/${currentStore.id}/${fileName}`
         
-        const { error: uploadError } = await supabase.storage
-          .from('drawcaf')
-          .upload(filePath, file)
-        
-        if (uploadError) throw uploadError
-        
-        const { data: { publicUrl } } = supabase.storage
-          .from('drawcaf')
-          .getPublicUrl(filePath)
+        const publicUrl = await storageUpload(filePath, file)
         
         setImages(prev => [...prev, {
           url: publicUrl,
@@ -159,7 +152,7 @@ export default function ProductFormPage() {
         })
         
         if (paths.length > 0) {
-          await supabase.storage.from('drawcaf').remove(paths)
+          await storageRemove(paths)
         }
       }
       

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useStoreStore, useAuthStore } from '../../store'
 import { supabase } from '../../lib/supabase'
+import { storageUpload } from '../../lib/storage'
 import { Settings, Save, Store, User, Mail, Phone, MapPin, AlertCircle, Camera, X } from 'lucide-react'
 
 export default function SettingsPage() {
@@ -111,17 +112,9 @@ export default function SettingsPage() {
     const filePath = `profiles/${profile.id}/${folder}.${fileExt}`
     const timestamp = Date.now()
 
-    const { error: uploadError } = await supabase.storage
-      .from('drawcaf')
-      .upload(filePath, file, { upsert: true })
+    const publicUrl = await storageUpload(filePath, file)
 
-    if (uploadError) throw uploadError
-
-    const { data } = supabase.storage
-      .from('drawcaf')
-      .getPublicUrl(filePath)
-
-    return `${data.publicUrl}?t=${timestamp}`
+    return `${publicUrl}?t=${timestamp}`
   }
 
   const uploadStoreImage = async (file, folder) => {
@@ -129,17 +122,9 @@ export default function SettingsPage() {
     const filePath = `stores/${currentStore.id}/${folder}.${fileExt}`
     const timestamp = Date.now()
 
-    const { error: uploadError } = await supabase.storage
-      .from('drawcaf')
-      .upload(filePath, file, { upsert: true })
+    const publicUrl = await storageUpload(filePath, file)
 
-    if (uploadError) throw uploadError
-
-    const { data } = supabase.storage
-      .from('drawcaf')
-      .getPublicUrl(filePath)
-
-    return `${data.publicUrl}?t=${timestamp}`
+    return `${publicUrl}?t=${timestamp}`
   }
 
   const handleStoreSubmit = async (e) => {

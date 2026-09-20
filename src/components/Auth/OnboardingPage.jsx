@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Store, MapPin, Tag, ArrowRight, ArrowLeft, Check, Image as ImageIcon, Shield, Upload } from 'lucide-react'
 import { AFRICAN_COUNTRIES, getCitiesForCountry } from '../../data/africanCountries'
 import { supabase } from '../../lib/supabase'
+import { storageUpload } from '../../lib/storage'
 
 const categories = [
   'Mode & Accessoires',
@@ -108,10 +109,7 @@ export default function OnboardingPage() {
         const fileExt = logoFile.name.split('.').pop()
         const fileName = `logo_${Date.now()}.${fileExt}`
         const filePath = `stores/${profile.id}/${fileName}`
-        const { error: uploadError } = await supabase.storage.from('drawcaf').upload(filePath, logoFile)
-        if (uploadError) throw uploadError
-        const { data: { publicUrl } } = supabase.storage.from('drawcaf').getPublicUrl(filePath)
-        logoUrl = publicUrl
+        logoUrl = await storageUpload(filePath, logoFile)
       }
 
       let bannerUrl = ''
@@ -119,10 +117,7 @@ export default function OnboardingPage() {
         const fileExt = bannerFile.name.split('.').pop()
         const fileName = `banner_${Date.now()}.${fileExt}`
         const filePath = `stores/${profile.id}/${fileName}`
-        const { error: uploadError } = await supabase.storage.from('drawcaf').upload(filePath, bannerFile)
-        if (uploadError) throw uploadError
-        const { data: { publicUrl } } = supabase.storage.from('drawcaf').getPublicUrl(filePath)
-        bannerUrl = publicUrl
+        bannerUrl = await storageUpload(filePath, bannerFile)
       }
 
       const { data: newStore } = await createStore({
@@ -146,15 +141,16 @@ export default function OnboardingPage() {
           const fileExt = doc.file.name.split('.').pop()
           const fileName = `cert_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`
           const filePath = `certifications/${profile.id}/${fileName}`
-          const { error: uploadError } = await supabase.storage.from('drawcaf').upload(filePath, doc.file)
-          if (!uploadError) {
-            const { data: { publicUrl } } = supabase.storage.from('drawcaf').getPublicUrl(filePath)
+          try {
+            const publicUrl = await storageUpload(filePath, doc.file)
             await supabase.from('store_certifications').insert({
               store_id: newStore.id,
               document_type: doc.type,
               document_url: publicUrl,
               status: 'pending',
             })
+          } catch {
+            // Upload failed, skip this doc
           }
         }
         await supabase.from('stores').update({ certification_fee_paid: true }).eq('id', newStore.id)

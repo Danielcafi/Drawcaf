@@ -454,33 +454,33 @@ CREATE OR REPLACE TRIGGER on_review_created
 -- ============================================
 -- Create storage bucket for product images
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('drawcaf', 'drawcaf', true)
+VALUES ('Drawcaf', 'Drawcaf', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Allow authenticated users to upload to drawcaf bucket
+-- Allow authenticated users to upload to Drawcaf bucket
 CREATE POLICY "Allow authenticated uploads" ON storage.objects
   FOR INSERT WITH CHECK (
-    bucket_id = 'drawcaf' 
+    bucket_id = 'Drawcaf' 
     AND auth.role() = 'authenticated'
   );
 
 -- Allow authenticated users to update their own files
 CREATE POLICY "Allow authenticated updates" ON storage.objects
   FOR UPDATE USING (
-    bucket_id = 'drawcaf'
+    bucket_id = 'Drawcaf'
     AND auth.role() = 'authenticated'
   );
 
--- Allow public read access to drawcaf bucket
+-- Allow public read access to Drawcaf bucket
 CREATE POLICY "Allow public read access" ON storage.objects
   FOR SELECT USING (
-    bucket_id = 'drawcaf'
+    bucket_id = 'Drawcaf'
   );
 
 -- Allow owners to delete their own files
 CREATE POLICY "Allow owners to delete" ON storage.objects
   FOR DELETE USING (
-    bucket_id = 'drawcaf' 
+    bucket_id = 'Drawcaf' 
     AND auth.uid()::text = (storage.foldername(name))[1]
   );
 
