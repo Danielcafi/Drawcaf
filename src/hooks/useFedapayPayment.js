@@ -20,13 +20,18 @@ const useFedapayPayment = () => {
       }
 
       if (scriptLoading) {
+        let attempts = 0
         const checkLoaded = setInterval(() => {
+          attempts++
           if (scriptLoaded && window.FedaPay) {
             clearInterval(checkLoaded)
             resolve(true)
+          } else if (attempts >= 50) {
+            clearInterval(checkLoaded)
+            scriptLoading = false
+            reject(new Error('Fedapay n\'a pas pu se charger (timeout)'))
           }
         }, 100)
-        setTimeout(() => clearInterval(checkLoaded), 15000)
         return
       }
 
@@ -35,17 +40,16 @@ const useFedapayPayment = () => {
       const script = document.createElement('script')
       script.src = 'https://cdn.fedapay.com/checkout.js?v=1.1.7'
       script.async = true
-      
+
       script.onload = () => {
         scriptLoaded = true
         scriptLoading = false
-        console.log('Script Fedapay charge')
         resolve(true)
       }
-      
+
       script.onerror = () => {
         scriptLoading = false
-        reject(new Error('Impossible de charger Fedapay'))
+        reject(new Error('Impossible de charger le script Fedapay'))
       }
 
       document.body.appendChild(script)
@@ -58,13 +62,13 @@ const useFedapayPayment = () => {
 
     try {
       if (!isFedapayConfigured()) {
-        throw new Error('Fedapay n\'est pas configure')
+        throw new Error('Fedapay n\'est pas configuré. Clé publique manquante.')
       }
 
       await loadScript()
 
       if (!window.FedaPay) {
-        throw new Error('Fedapay n\'est pas disponible')
+        throw new Error('Fedapay n\'est pas disponible après chargement du script')
       }
 
       // Supprimer l'ancien bouton s'il existe
@@ -82,9 +86,10 @@ const useFedapayPayment = () => {
       const firstname = nameParts[0] || ''
       const lastname = nameParts.slice(1).join(' ') || ''
 
-      // Initialiser Fedapay selon la doc officielle
+      // Initialiser Fedapay
       window.FedaPay.init('#fedapay-btn', {
         public_key: FEDAPAY_CONFIG.publicKey,
+        environment: FEDAPAY_CONFIG.environment,
         transaction: {
           amount: Math.round(paymentData.amount),
           description: paymentData.description || 'Paiement Drawcaf',
@@ -96,29 +101,24 @@ const useFedapayPayment = () => {
           lastname,
         },
         onComplete: function(reason, resp) {
-          console.log('Callback Fedapay:', { reason, resp })
-          
           const FedaPay = window.FedaPay
-          
+
           if (reason === FedaPay.CHECKOUT_COMPLETED) {
-            console.log('Paiement reussi!', resp)
             setTransaction(resp)
             setLoading(false)
-            
+
             if (resolveRef.current) {
               resolveRef.current(resp)
               resolveRef.current = null
             }
           } else if (reason === FedaPay.DIALOG_DISMISSED) {
-            console.log('Dialog ferme par l\'utilisateur')
-            setError('Paiement annule par l\'utilisateur')
+            setError('Paiement annulé par l\'utilisateur')
             setLoading(false)
             if (rejectRef.current) {
-              rejectRef.current(new Error('Paiement annule'))
+              rejectRef.current(new Error('Paiement annulé'))
               rejectRef.current = null
             }
           } else {
-            console.log('Raison inconnue:', reason)
             setError('Statut de paiement inconnu')
             setLoading(false)
             if (rejectRef.current) {
@@ -129,15 +129,39 @@ const useFedapayPayment = () => {
         }
       })
 
-      // Retourner une promise
+      // Retourner une promise avec timeout
       return new Promise((resolve, reject) => {
         resolveRef.current = resolve
         rejectRef.current = reject
+
+        // Timeout de 60s pour éviter un blocage infini
+        const timeout = setTimeout(() => {
+          if (resolveRef.current) {
+            setLoading(false)
+            setError('Le paiement a pris trop de temps. Veuillez réessayer.')
+            rejectRef.current = null
+            resolveRef.current = null
+            reject(new Error('Timeout paiement'))
+          }
+        }, 60000)
+
+        // Ouvrir le popup Fedapay
         payBtn.click()
+
+        // Nettoyer le timeout si le popup se ferme avant
+        const origResolve = resolve
+        const origReject = reject
+        resolveRef.current = (val) => {
+          clearTimeout(timeout)
+          origResolve(val)
+        }
+        rejectRef.current = (err) => {
+          clearTimeout(timeout)
+          origReject(err)
+        }
       })
 
     } catch (err) {
-      console.error('Erreur Fedapay:', err)
       setLoading(false)
       setError(err.message)
       throw err
@@ -145,18 +169,12 @@ const useFedapayPayment = () => {
   }, [])
 
   const checkTransactionStatus = useCallback(async (transactionId) => {
-    setLoading(true)
-    setError(null)
-
     try {
-      // Vérifier que la session est valide pour obtenir le token d'accès
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
         throw new Error('Session non trouvée')
       }
 
-      // Appeler l'Edge Function pour vérifier la transaction côté serveur
-      // (la secretKey Fedapay n'est plus exposée au client)
       const { data, error } = await supabase.functions.invoke('fedapay-verify', {
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
@@ -177,8 +195,6 @@ const useFedapayPayment = () => {
     } catch (err) {
       setError(err.message)
       throw err
-    } finally {
-      setLoading(false)
     }
   }, [])
 
