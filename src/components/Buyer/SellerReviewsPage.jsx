@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useStoreStore } from '../../store'
-import { Star, CheckCircle, Package, TrendingUp, Users, DollarSign } from 'lucide-react'
+import { Star, CheckCircle, Package } from 'lucide-react'
 
 export default function SellerReviewsPage() {
   const { slug } = useParams()
@@ -20,12 +20,23 @@ export default function SellerReviewsPage() {
     try {
       const store = await fetchStoreBySlug(slug)
       
+      const { data: productIds } = await supabase
+        .from('products')
+        .select('id')
+        .eq('store_id', store.id)
+      
+      const ids = (productIds || []).map(p => p.id)
+      
+      if (ids.length === 0) {
+        setReviews([])
+        setStats({ avg: 0, total: 0, distribution: {} })
+        return
+      }
+      
       const { data: reviewsData } = await supabase
         .from('reviews')
         .select('*, profiles(full_name, avatar_url), products(title, product_images(url))')
-        .in('product_id', 
-          supabase.from('products').select('id').eq('store_id', store.id)
-        )
+        .in('product_id', ids)
         .order('created_at', { ascending: false })
       
       if (reviewsData) {
@@ -44,7 +55,7 @@ export default function SellerReviewsPage() {
         setStats({ avg, total, distribution })
       }
     } catch (error) {
-      console.error('Error loading reviews:', error)
+      // silent
     }
     setLoading(false)
   }

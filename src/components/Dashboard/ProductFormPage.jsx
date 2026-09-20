@@ -76,13 +76,13 @@ export default function ProductFormPage() {
         const filePath = `products/${currentStore.id}/${fileName}`
         
         const { error: uploadError } = await supabase.storage
-          .from('Drawcaf')
+          .from('drawcaf')
           .upload(filePath, file)
         
         if (uploadError) throw uploadError
         
         const { data: { publicUrl } } = supabase.storage
-          .from('Drawcaf')
+          .from('drawcaf')
           .getPublicUrl(filePath)
         
         setImages(prev => [...prev, {
@@ -159,7 +159,7 @@ export default function ProductFormPage() {
         })
         
         if (paths.length > 0) {
-          await supabase.storage.from('Drawcaf').remove(paths)
+          await supabase.storage.from('drawcaf').remove(paths)
         }
       }
       

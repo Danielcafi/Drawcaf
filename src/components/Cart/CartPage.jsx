@@ -11,10 +11,11 @@ import {
 } from 'lucide-react'
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, getTotal, clearCart } = useCartStore()
+  const { items, removeItem, updateQuantity, clearCart } = useCartStore()
   const navigate = useNavigate()
   
-  const subtotal = getTotal()
+  const itemUnitPrice = (item) => item.product.price + (item.variant?.price || 0)
+  const subtotal = items.reduce((sum, item) => sum + itemUnitPrice(item) * item.quantity, 0)
   const shipping = subtotal > 50000 ? 0 : 1000
   const total = subtotal + shipping
   
@@ -114,7 +115,7 @@ export default function CartPage() {
                   
                   {/* Price */}
                   <p className="font-bold text-lg">
-                    {(item.product.price * item.quantity).toLocaleString('fr-FR')} XOF
+                    {(itemUnitPrice(item) * item.quantity).toLocaleString('fr-FR')} XOF
                   </p>
                 </div>
               </div>

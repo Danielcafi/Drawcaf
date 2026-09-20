@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { motion } from 'framer-motion'
-import { Store, Users, Shield, Clock, CheckCircle, AlertTriangle } from 'lucide-react'
+import { Store, Users, Shield, Clock, CheckCircle, TrendingUp, Receipt, Package } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 export default function AdminOverview() {
   const [stats, setStats] = useState({
@@ -13,6 +14,10 @@ export default function AdminOverview() {
     pendingCertifications: 0,
   })
   const [pendingStores, setPendingStores] = useState([])
+  const [sales, setSales] = useState([])
+  const [statusData, setStatusData] = useState([])
+  const [totalOrders, setTotalOrders] = useState(0)
+  const [totalRevenue, setTotalRevenue] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -28,6 +33,14 @@ export default function AdminOverview() {
       const { count: approvedStores } = await supabase.from('stores').select('*', { count: 'exact', head: true }).eq('approval_status', 'approved')
       const { count: totalUsers } = await supabase.from('profiles').select('*', { count: 'exact', head: true })
       const { count: pendingCertifications } = await supabase.from('store_certifications').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+      const { data: orderData } = await supabase.from('orders').select('total, status, created_at')
+      const { data: salesRows } = await supabase.from('stores').select('total_sales, name')
+
+      const revenue = (orderData || []).reduce((sum, order) => sum + (Number(order.total) || 0), 0)
+      const statusBuckets = {}
+      ;(orderData || []).forEach((order) => {
+        statusBuckets[order.status] = (statusBuckets[order.status] || 0) + 1
+      })
 
       setStats({
         totalStores: totalStores || 0,
@@ -36,6 +49,18 @@ export default function AdminOverview() {
         totalUsers: totalUsers || 0,
         pendingCertifications: pendingCertifications || 0,
       })
+      setTotalOrders((orderData || []).length)
+      setTotalRevenue(revenue)
+      setSales((salesRows || []).map((row) => ({
+        name: row.name,
+        sales: row.total_sales || 0,
+      })))
+      setStatusData(
+        Object.entries(statusBuckets).map(([status, value]) => ({
+          name: status,
+          value,
+        }))
+      )
 
       const { data: pending } = await supabase
         .from('stores')
@@ -67,13 +92,16 @@ export default function AdminOverview() {
         <p className="text-gray-500">Vue d'ensemble de la plateforme Drawcaf</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
           { label: 'Total boutiques', value: stats.totalStores, icon: Store, color: 'bg-blue-100 text-blue-600' },
           { label: 'En attente', value: stats.pendingStores, icon: Clock, color: 'bg-yellow-100 text-yellow-600' },
           { label: 'Approuvees', value: stats.approvedStores, icon: CheckCircle, color: 'bg-green-100 text-green-600' },
           { label: 'Utilisateurs', value: stats.totalUsers, icon: Users, color: 'bg-purple-100 text-purple-600' },
           { label: 'Certif. en attente', value: stats.pendingCertifications, icon: Shield, color: 'bg-orange-100 text-orange-600' },
+          { label: 'Commandes', value: totalOrders, icon: Receipt, color: 'bg-indigo-100 text-indigo-600' },
+          { label: 'Revenu total', value: `${totalRevenue.toLocaleString('fr-FR')} XOF`, icon: TrendingUp, color: 'bg-emerald-100 text-emerald-600' },
+          { label: 'Ventes totales', value: sales.reduce((sum, item) => sum + item.sales, 0), icon: Package, color: 'bg-pink-100 text-pink-600' },
         ].map((stat, index) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }} className="bg-white rounded-xl p-4 shadow-sm">
@@ -156,6 +184,52 @@ export default function AdminOverview() {
               </div>
             </Link>
           </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <h2 className="font-bold text-gray-900 mb-4">Ventes par boutique</h2>
+          {sales.length === 0 ? (
+            <div className="h-64 flex items-center justify-center text-gray-400">Aucune donnée de vente</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={sales}>
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Bar dataKey="sales" fill="#1E3A8B" />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <h2 className="font-bold text-gray-900 mb-4">Répartition des commandes par statut</h2>
+          {statusData.length === 0 ? (
+            <div className="h-64 flex items-center justify-center text-gray-400">Aucune commande</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={statusData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={90}
+                >
+                  {statusData.map((entry, index) => (
+                    <Cell
+                      key={entry.name}
+                      fill={['#F59E0B', '#3B82F6', '#8B5CF6', '#10B981', '#EF4444', '#6B7280'][index % 6]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
     </div>

@@ -46,7 +46,7 @@ export default function CheckoutPage() {
   const [cardCvc, setCardCvc] = useState('')
   
   // Fedapay Hook
-  const { processPayment, loading: paymentLoading, error: paymentError } = useFedapayPayment()
+  const { processPayment, checkTransactionStatus, loading: paymentLoading, error: paymentError } = useFedapayPayment()
   
   // Receipt state
   const [receiptData, setReceiptData] = useState(null)
@@ -103,10 +103,16 @@ export default function CheckoutPage() {
         }
         
         // processPayment retourne une promise qui se résout quand le callback Fedapay est appelé
-        await processPayment(paymentData)
-        
+        const fedapayResponse = await processPayment(paymentData)
+
+        // Vérifier le statut de la transaction côté serveur via l'Edge Function
+        if (fedapayResponse?.transaction?.id || fedapayResponse?.id) {
+          const transactionId = fedapayResponse.transaction?.id || fedapayResponse.id
+          await checkTransactionStatus(transactionId)
+        }
+
         // Si on arrive ici, le paiement est réussi
-        console.log('✅ Paiement confirmé, création de la commande...')
+        // Paiement confirme, creation de la commande
       }
       
       // Group items by store
@@ -118,12 +124,15 @@ export default function CheckoutPage() {
       }, {})
       
       const allCreatedOrders = []
+      let isFirstStore = true
       
       // Create orders for each store
       for (const [storeId, storeItems] of Object.entries(itemsByStore)) {
         const storeSubtotal = storeItems.reduce(
           (sum, item) => sum + item.product.price * item.quantity, 0
         )
+        const storeShipping = isFirstStore ? shipping : 0
+        isFirstStore = false
         
         // Fetch store info for receipt
         const { data: storeInfo } = await supabase
@@ -132,50 +141,34 @@ export default function CheckoutPage() {
           .eq('id', storeId)
           .single()
         
-        // Create order
-        const { data: order, error: orderError } = await supabase
-          .from('orders')
-          .insert({
-            buyer_id: user?.id,
-            store_id: storeId,
-            subtotal: storeSubtotal,
-            shipping_cost: shipping,
-            total: storeSubtotal + (storeItems === items ? shipping : 0),
-            shipping_address: {
-              fullName,
-              email,
-              phone,
-              address,
-              city: resolvedCity,
-              postalCode,
-              country
-            },
-            payment_method: selectedPaymentMethod.id,
-            payment_status: 'paid',
-            status: 'confirmed'
-          })
-          .select()
-          .single()
-        
-        if (orderError) throw orderError
-        
-        // Create order items
-        const orderItems = storeItems.map(item => ({
-          order_id: order.id,
+        // Create order via RPC atomique
+        const rpcItems = storeItems.map(item => ({
           product_id: item.product.id,
-          variant_id: item.variant?.id,
-          title: item.product.title,
-          price: item.product.price,
-          quantity: item.quantity,
-          image_url: item.product.product_images?.[0]?.url
+          variant_id: item.variant?.id || null,
+          quantity: item.quantity
         }))
-        
-        const { error: itemsError } = await supabase
-          .from('order_items')
-          .insert(orderItems)
-        
-        if (itemsError) throw itemsError
-        
+        const { data: rpcResult, error: orderError } = await supabase.rpc('create_checkout_order', {
+          items: rpcItems,
+          shipping_cost: storeShipping,
+          payment_method: selectedPaymentMethod.id,
+          payment_status: 'paid',
+          order_status: 'confirmed',
+          shipping_address: {
+            fullName,
+            email,
+            phone,
+            address,
+            city: resolvedCity,
+            postalCode,
+            country
+          },
+          notes: null
+        })
+        if (orderError) throw orderError
+        const order = rpcResult
+
+        // Legacy receipt display block kept for the UI; stock/order updates now come from the RPC
+
         // Generate receipt number
         const receiptNumber = `REC-${Date.now().toString().slice(-8)}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
         
@@ -195,8 +188,8 @@ export default function CheckoutPage() {
             store_id: storeId,
             receipt_number: receiptNumber,
             subtotal: storeSubtotal,
-            shipping_cost: storeItems === items ? shipping : 0,
-            total: storeSubtotal + (storeItems === items ? shipping : 0),
+            shipping_cost: storeShipping,
+            total: storeSubtotal + storeShipping,
             currency: 'XOF',
             payment_method: selectedPaymentMethod.name || selectedPaymentMethod.id,
             items: receiptItems,
@@ -217,25 +210,6 @@ export default function CheckoutPage() {
         }
         
         allCreatedOrders.push({ ...order, receipt, store_name: storeInfo?.name, store_slug: storeInfo?.slug })
-        
-        // Update product stock
-        await Promise.all(storeItems.map(item => 
-          supabase
-            .from('products')
-            .update({
-              stock_quantity: Math.max(0, item.product.stock_quantity - item.quantity),
-              total_sales: (item.product.total_sales || 0) + item.quantity
-            })
-            .eq('id', item.product.id)
-        ))
-        
-        // Update store total sales
-        await supabase
-          .from('stores')
-          .update({
-            total_sales: supabase.rpc('increment', { x: storeItems.length })
-          })
-          .eq('id', storeId)
       }
       
       // Save receipt data for display

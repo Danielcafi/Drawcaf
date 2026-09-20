@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { FEDAPAY_CONFIG, isFedapayConfigured } from '../lib/fedapay'
+import { supabase } from '../lib/supabase'
 
 let scriptLoading = false
 let scriptLoaded = false
@@ -25,6 +26,7 @@ const useFedapayPayment = () => {
             resolve(true)
           }
         }, 100)
+        setTimeout(() => clearInterval(checkLoaded), 15000)
         return
       }
 
@@ -147,17 +149,29 @@ const useFedapayPayment = () => {
     setError(null)
 
     try {
-      const response = await fetch(`${FEDAPAY_CONFIG.baseUrl}/transactions/${transactionId}`, {
-        headers: {
-          'Authorization': `Bearer ${FEDAPAY_CONFIG.secretKey}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la verification')
+      // Vérifier que la session est valide pour obtenir le token d'accès
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('Session non trouvée')
       }
 
-      const data = await response.json()
+      // Appeler l'Edge Function pour vérifier la transaction côté serveur
+      // (la secretKey Fedapay n'est plus exposée au client)
+      const { data, error } = await supabase.functions.invoke('fedapay-verify', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: { transactionId },
+      })
+
+      if (error) {
+        throw new Error(error.message || 'Erreur lors de la vérification')
+      }
+
+      if (!data || !data.transaction) {
+        throw new Error('Réponse de vérification invalide')
+      }
+
       setTransaction(data.transaction)
       return data.transaction
     } catch (err) {

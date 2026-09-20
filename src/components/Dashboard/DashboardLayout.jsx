@@ -10,6 +10,7 @@ import {
   MessageSquare, 
   Star, 
   Settings,
+  BadgeCheck,
   LogOut,
   Menu,
   X,
@@ -24,6 +25,7 @@ const sidebarItems = [
   { path: '/dashboard/orders', icon: ShoppingCart, label: 'Commandes' },
   { path: '/dashboard/messages', icon: MessageSquare, label: 'Messages' },
   { path: '/dashboard/reviews', icon: Star, label: 'Avis' },
+  { path: '/dashboard/certifications', icon: BadgeCheck, label: 'Certification' },
   { path: '/dashboard/settings', icon: Settings, label: 'Paramètres' },
 ]
 

@@ -1,12 +1,14 @@
 export const FEDAPAY_CONFIG = {
   publicKey: import.meta.env.VITE_FEDAPAY_PUBLIC_KEY,
-  secretKey: import.meta.env.VITE_FEDAPAY_SECRET_KEY,
   baseUrl: 'https://api.fedapay.com/v1',
   returnUrl: import.meta.env.VITE_FEDAPAY_RETURN_URL || 'https://drawcaf.vercel.app/payment/callback',
 }
 
+// La secretKey n'est plus stockée côté client : elle vit uniquement dans l'Edge Function
+// `fedapay-verify` (supabase/functions/fedapay-verify). On ne peut donc plus la compter
+// comme critère de configuration côté frontend.
 export const isFedapayConfigured = () => {
-  return FEDAPAY_CONFIG.publicKey && FEDAPAY_CONFIG.secretKey
+  return Boolean(FEDAPAY_CONFIG.publicKey)
 }
 
 // Méthodes de paiement disponibles

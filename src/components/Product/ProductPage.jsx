@@ -44,6 +44,76 @@ export default function ProductPage() {
     }
   }
   
+  const [isWishlisted, setIsWishlisted] = useState(false)
+  const [wishlistLoading, setWishlistLoading] = useState(false)
+
+  useEffect(() => {
+    if (!user || !currentProduct?.id) {
+      setIsWishlisted(false)
+      return
+    }
+
+    const checkWishlist = async () => {
+      setWishlistLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('wishlist')
+          .select('id')
+          .eq('buyer_id', user.id)
+          .eq('product_id', currentProduct.id)
+          .maybeSingle()
+
+        if (error) throw error
+        setIsWishlisted(Boolean(data))
+      } catch (err) {
+        console.error('Erreur vérification wishlist:', err)
+        setIsWishlisted(false)
+      } finally {
+        setWishlistLoading(false)
+      }
+    }
+
+    checkWishlist()
+  }, [user?.id, currentProduct?.id])
+
+  const handleToggleWishlist = async () => {
+    if (!user) {
+      navigate('/login')
+      return
+    }
+
+    if (wishlistLoading) return
+
+    setWishlistLoading(true)
+
+    try {
+      if (isWishlisted) {
+        const { error } = await supabase
+          .from('wishlist')
+          .delete()
+          .eq('buyer_id', user.id)
+          .eq('product_id', currentProduct.id)
+
+        if (error) throw error
+        setIsWishlisted(false)
+      } else {
+        const { error } = await supabase
+          .from('wishlist')
+          .insert({
+            buyer_id: user.id,
+            product_id: currentProduct.id,
+          })
+
+        if (error && error.code !== '23505') throw error
+        setIsWishlisted(true)
+      }
+    } catch (err) {
+      console.error('Erreur toggle wishlist:', err)
+    } finally {
+      setWishlistLoading(false)
+    }
+  }
+
   const handleAddToCart = () => {
     if (!user) {
       navigate('/login')
@@ -198,13 +268,32 @@ export default function ProductPage() {
             
             <div className="flex items-center gap-4">
               <span className="text-3xl font-bold text-primary-100">
-                {currentProduct.price.toLocaleString('fr-FR')} XOF
+                {(currentProduct.price + (selectedVariant?.price || 0)).toLocaleString('fr-FR')} XOF
               </span>
               {currentProduct.compare_at_price && (
                 <span className="text-xl text-gray-400 line-through">
-                  {currentProduct.compare_at_price.toLocaleString('fr-FR')} XOF
+                  {(currentProduct.compare_at_price + (selectedVariant?.price || 0)).toLocaleString('fr-FR')} XOF
                 </span>
               )}
+            </div>
+
+            <div className="flex items-center gap-2 mt-4">
+              <button
+                type="button"
+                onClick={handleToggleWishlist}
+                disabled={!user || wishlistLoading}
+                className={`p-3 rounded-lg border transition-colors ${
+                  isWishlisted
+                    ? 'bg-primary-50 border-primary-100 text-primary-100'
+                    : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                }`}
+                title={isWishlisted ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+              >
+                <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`} />
+              </button>
+              <span className="text-sm text-gray-500">
+                {isWishlisted ? 'Dans vos favoris' : 'Ajouter aux favoris'}
+              </span>
             </div>
             
             {/* Rating */}

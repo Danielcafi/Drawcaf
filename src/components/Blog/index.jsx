@@ -15,7 +15,7 @@ export default function Blog() {
           <Button buttonStyle="bg-primary-100 text-white">
             <div className="flex gap-2.5 items-center">
               Tout voir
-              <img src="anchor-right.svg" alt="anchor" />
+              <img src="/anchor-right.svg" alt="anchor" />
             </div>
           </Button>
         </div>

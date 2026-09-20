@@ -108,9 +108,9 @@ export default function OnboardingPage() {
         const fileExt = logoFile.name.split('.').pop()
         const fileName = `logo_${Date.now()}.${fileExt}`
         const filePath = `stores/${profile.id}/${fileName}`
-        const { error: uploadError } = await supabase.storage.from('Drawcaf').upload(filePath, logoFile)
+        const { error: uploadError } = await supabase.storage.from('drawcaf').upload(filePath, logoFile)
         if (uploadError) throw uploadError
-        const { data: { publicUrl } } = supabase.storage.from('Drawcaf').getPublicUrl(filePath)
+        const { data: { publicUrl } } = supabase.storage.from('drawcaf').getPublicUrl(filePath)
         logoUrl = publicUrl
       }
 
@@ -119,9 +119,9 @@ export default function OnboardingPage() {
         const fileExt = bannerFile.name.split('.').pop()
         const fileName = `banner_${Date.now()}.${fileExt}`
         const filePath = `stores/${profile.id}/${fileName}`
-        const { error: uploadError } = await supabase.storage.from('Drawcaf').upload(filePath, bannerFile)
+        const { error: uploadError } = await supabase.storage.from('drawcaf').upload(filePath, bannerFile)
         if (uploadError) throw uploadError
-        const { data: { publicUrl } } = supabase.storage.from('Drawcaf').getPublicUrl(filePath)
+        const { data: { publicUrl } } = supabase.storage.from('drawcaf').getPublicUrl(filePath)
         bannerUrl = publicUrl
       }
 
@@ -146,9 +146,9 @@ export default function OnboardingPage() {
           const fileExt = doc.file.name.split('.').pop()
           const fileName = `cert_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`
           const filePath = `certifications/${profile.id}/${fileName}`
-          const { error: uploadError } = await supabase.storage.from('Drawcaf').upload(filePath, doc.file)
+          const { error: uploadError } = await supabase.storage.from('drawcaf').upload(filePath, doc.file)
           if (!uploadError) {
-            const { data: { publicUrl } } = supabase.storage.from('Drawcaf').getPublicUrl(filePath)
+            const { data: { publicUrl } } = supabase.storage.from('drawcaf').getPublicUrl(filePath)
             await supabase.from('store_certifications').insert({
               store_id: newStore.id,
               document_type: doc.type,

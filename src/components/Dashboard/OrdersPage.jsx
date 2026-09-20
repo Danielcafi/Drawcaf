@@ -19,7 +19,7 @@ export default function OrdersPage() {
     try {
       const { data, error } = await supabase
         .from('orders')
-        .select('*, order_items(*)')
+        .select('*, order_items(*), buyer:profiles!orders_buyer_id_fkey(id, full_name, avatar_url, email)')
         .eq('store_id', currentStore.id)
         .order('created_at', { ascending: false })
 
@@ -129,12 +129,12 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-sm font-medium">{order.customer_name}</p>
-                        <p className="text-xs text-gray-500">{order.customer_email}</p>
+                        <p className="text-sm font-medium">{order.buyer?.full_name || order.buyer?.email || 'Anonyme'}</p>
+                        <p className="text-xs text-gray-500">{order.buyer?.email || '—'}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-medium">{order.total_amount?.toLocaleString('fr-FR')} XOF</span>
+                      <span className="font-medium">{order.total?.toLocaleString('fr-FR')} XOF</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}`}>

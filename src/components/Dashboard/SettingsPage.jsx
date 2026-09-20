@@ -112,13 +112,13 @@ export default function SettingsPage() {
     const timestamp = Date.now()
 
     const { error: uploadError } = await supabase.storage
-      .from('Drawcaf')
+      .from('drawcaf')
       .upload(filePath, file, { upsert: true })
 
     if (uploadError) throw uploadError
 
     const { data } = supabase.storage
-      .from('Drawcaf')
+      .from('drawcaf')
       .getPublicUrl(filePath)
 
     return `${data.publicUrl}?t=${timestamp}`
@@ -130,13 +130,13 @@ export default function SettingsPage() {
     const timestamp = Date.now()
 
     const { error: uploadError } = await supabase.storage
-      .from('Drawcaf')
+      .from('drawcaf')
       .upload(filePath, file, { upsert: true })
 
     if (uploadError) throw uploadError
 
     const { data } = supabase.storage
-      .from('Drawcaf')
+      .from('drawcaf')
       .getPublicUrl(filePath)
 
     return `${data.publicUrl}?t=${timestamp}`

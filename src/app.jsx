@@ -34,6 +34,7 @@ import OrdersPage from './components/Dashboard/OrdersPage'
 import MessagesPage from './components/Dashboard/MessagesPage'
 import ReviewsPage from './components/Dashboard/ReviewsPage'
 import SettingsPage from './components/Dashboard/SettingsPage'
+import CertificationsPage from './components/Dashboard/CertificationsPage'
 
 // Buyer Pages
 import StoreLayout from './components/Layout/StoreLayout'
@@ -309,6 +310,7 @@ function App() {
           <Route path="orders" element={<OrdersPage />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="reviews" element={<ReviewsPage />} />
+          <Route path="certifications" element={<CertificationsPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 

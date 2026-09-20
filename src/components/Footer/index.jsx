@@ -43,7 +43,7 @@ export default function Footer() {
           whileInView="visible"
           animate={{
             rotate: 360,
-            transition: { duration: 15, repeat: "Infinity", ease: "easeInOut" },
+            transition: { duration: 15, repeat: Infinity, ease: "easeInOut" },
           }}
           variants={footerImage}
           className="hidden lg:block absolute top-1/4 -left-28"
@@ -55,7 +55,7 @@ export default function Footer() {
           whileInView="visible"
           animate={{
             rotate: 360,
-            transition: { duration: 30, repeat: "Infinity", ease: "easeInOut" },
+            transition: { duration: 30, repeat: Infinity, ease: "easeInOut" },
           }}
           variants={footerImage}
           className="hidden lg:block absolute top-[20%] -right-24"

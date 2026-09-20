@@ -45,7 +45,7 @@ export default function MessagesPage() {
         .select('*')
 
       if (isSeller) {
-        query = query.eq('store_id', currentStore.id)
+        query = query.eq('seller_id', profile?.id || user.id)
       } else {
         query = query.eq('buyer_id', user.id)
       }
@@ -125,7 +125,7 @@ export default function MessagesPage() {
         .from('messages')
         .insert({
           conversation_id: selectedConversation.id,
-          sender_id: profile.id,
+          sender_id: profile?.id || user.id,
           content: newMessage.trim()
         })
 

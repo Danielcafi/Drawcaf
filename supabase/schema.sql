@@ -338,7 +338,14 @@ CREATE POLICY "Buyers can view own receipts" ON receipts FOR SELECT USING (auth.
 CREATE POLICY "Store owners can view store receipts" ON receipts FOR SELECT USING (
   EXISTS (SELECT 1 FROM stores WHERE stores.id = receipts.store_id AND stores.owner_id = auth.uid())
 );
-CREATE POLICY "System can create receipts" ON receipts FOR INSERT WITH CHECK (true);
+CREATE POLICY "Buyers can create own receipts" ON receipts FOR INSERT WITH CHECK (auth.uid() = buyer_id);
+CREATE POLICY "Store owners can create store receipts" ON receipts FOR INSERT WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM orders o
+    JOIN stores s ON s.id = o.store_id
+    WHERE o.id = receipts.order_id AND s.owner_id = auth.uid()
+  )
+);
 
 -- Reviews: public read, buyer create
 CREATE POLICY "Reviews are viewable by everyone" ON reviews FOR SELECT USING (true);
@@ -440,7 +447,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Trigger for new review
 CREATE OR REPLACE TRIGGER on_review_created
   AFTER INSERT ON reviews
-  FOR EACH ROW EXECUTE FUNCTION update_store_stats();
+  FOR EACH ROW EXECUTE FUNCTION update_product_stats();
 
 -- ============================================
 -- STORAGE BUCKETS
@@ -476,3 +483,196 @@ CREATE POLICY "Allow owners to delete" ON storage.objects
     bucket_id = 'drawcaf' 
     AND auth.uid()::text = (storage.foldername(name))[1]
   );
+
+-- ============================================
+-- RPC: create_checkout_order (étape 1)
+-- Fonction SQL transactionnelle pour le checkout :
+-- - insère la commande, les items, la réception
+-- - décrémente le stock produit/variante
+-- - met à jour total_sales du produit et de la boutique
+-- Usage depuis le client :
+--   supabase.rpc('create_checkout_order', { items: [...] })
+-- Chaque item doit contenir : product_id, variant_id (optionnel), quantity
+-- ============================================
+CREATE OR REPLACE FUNCTION create_checkout_order(
+  p_items JSONB,
+  p_shipping_cost NUMERIC(10,2) DEFAULT 0,
+  p_payment_method TEXT DEFAULT 'unknown',
+  p_payment_status TEXT DEFAULT 'pending',
+  p_order_status TEXT DEFAULT 'confirmed',
+  p_shipping_address JSONB DEFAULT NULL,
+  p_notes TEXT DEFAULT NULL
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $function$
+DECLARE
+  v_item JSONB;
+  v_order_id UUID;
+  v_store_id UUID;
+  v_product_id UUID;
+  v_variant_id UUID;
+  v_qty INTEGER;
+  v_price NUMERIC(10,2);
+  v_title TEXT;
+  v_image_url TEXT;
+  v_subtotal NUMERIC(10,2) := 0;
+  v_store_sales_delta INTEGER := 0;
+BEGIN
+  IF p_items IS NULL OR jsonb_array_length(p_items) = 0 THEN
+    RAISE EXCEPTION 'Panier vide';
+  END IF;
+
+  v_item := p_items->0;
+  v_product_id := (v_item->>'product_id')::UUID;
+
+  SELECT p.store_id INTO v_store_id
+  FROM products p
+  WHERE p.id = v_product_id;
+
+  IF v_store_id IS NULL THEN
+    RAISE EXCEPTION 'Produit introuvable';
+  END IF;
+
+  FOR v_item IN SELECT * FROM jsonb_array_elements(p_items) LOOP
+    v_product_id := (v_item->>'product_id')::UUID;
+    IF v_product_id IS NULL THEN
+      RAISE EXCEPTION 'Item sans product_id';
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1
+      FROM products p
+      WHERE p.id = v_product_id AND p.store_id = v_store_id
+    ) THEN
+      RAISE EXCEPTION 'Tous les produits doivent appartenir à la même boutique';
+    END IF;
+  END LOOP;
+
+  INSERT INTO orders (
+    buyer_id,
+    store_id,
+    subtotal,
+    shipping_cost,
+    total,
+    shipping_address,
+    payment_method,
+    payment_status,
+    status,
+    notes
+  ) VALUES (
+    auth.uid(),
+    v_store_id,
+    0,
+    p_shipping_cost,
+    0,
+    p_shipping_address,
+    p_payment_method,
+    p_payment_status,
+    p_order_status,
+    p_notes
+  ) RETURNING id INTO v_order_id;
+
+  FOR v_item IN SELECT * FROM jsonb_array_elements(p_items) LOOP
+    v_product_id := (v_item->>'product_id')::UUID;
+    v_variant_id := (v_item->>'variant_id')::UUID;
+    v_qty := COALESCE((v_item->>'quantity')::INTEGER, 1);
+
+    IF v_qty IS NULL OR v_qty <= 0 THEN
+      RAISE EXCEPTION 'Quantité invalide';
+    END IF;
+
+    SELECT p.title, p.price, pi.url
+    INTO v_title, v_price, v_image_url
+    FROM products p
+    LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.position = 0
+    WHERE p.id = v_product_id;
+
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Produit introuvable: %', v_product_id;
+    END IF;
+
+    IF v_variant_id IS NOT NULL THEN
+      UPDATE product_variants
+      SET stock_quantity = stock_quantity - v_qty
+      WHERE id = v_variant_id;
+
+      IF NOT FOUND THEN
+        RAISE EXCEPTION 'Variante introuvable: %', v_variant_id;
+      END IF;
+
+      IF (SELECT stock_quantity FROM product_variants WHERE id = v_variant_id) < 0 THEN
+        RAISE EXCEPTION 'Stock variante insuffisant';
+      END IF;
+
+      SELECT COALESCE(price, v_price) INTO v_price
+      FROM product_variants
+      WHERE id = v_variant_id;
+    ELSE
+      UPDATE products
+      SET stock_quantity = stock_quantity - v_qty
+      WHERE id = v_product_id;
+
+      IF NOT FOUND THEN
+        RAISE EXCEPTION 'Produit introuvable: %', v_product_id;
+      END IF;
+
+      IF (SELECT stock_quantity FROM products WHERE id = v_product_id) < 0 THEN
+        RAISE EXCEPTION 'Stock insuffisant pour le produit %', v_product_id;
+      END IF;
+    END IF;
+
+    INSERT INTO order_items (
+      order_id,
+      product_id,
+      variant_id,
+      title,
+      price,
+      quantity,
+      image_url
+    ) VALUES (
+      v_order_id,
+      v_product_id,
+      v_variant_id,
+      v_title,
+      v_price,
+      v_qty,
+      v_image_url
+    );
+
+    v_subtotal := v_subtotal + (v_price * v_qty);
+    v_store_sales_delta := v_store_sales_delta + v_qty;
+
+    UPDATE products
+    SET total_sales = total_sales + v_qty
+    WHERE id = v_product_id;
+  END LOOP;
+
+  UPDATE orders
+  SET subtotal = v_subtotal,
+      total = v_subtotal + p_shipping_cost
+  WHERE id = v_order_id;
+
+  UPDATE stores
+  SET total_sales = total_sales + v_store_sales_delta
+  WHERE id = v_store_id;
+
+  BEGIN
+    INSERT INTO receipts (order_id, buyer_id, store_id)
+    VALUES (v_order_id, auth.uid(), v_store_id);
+  EXCEPTION WHEN undefined_table THEN
+    NULL;
+  END;
+
+  RETURN jsonb_build_object(
+    'order_id', v_order_id,
+    'subtotal', v_subtotal,
+    'total', v_subtotal + p_shipping_cost
+  );
+END;
+$function$;
+
+-- Autoriser les utilisateurs authentifiés à exécuter la RPC checkout
+GRANT EXECUTE ON FUNCTION public.create_checkout_order(JSONB, NUMERIC(10,2), TEXT, TEXT, TEXT, JSONB, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.create_checkout_order(JSONB, NUMERIC(10,2), TEXT, TEXT, TEXT, JSONB, TEXT) TO anon;

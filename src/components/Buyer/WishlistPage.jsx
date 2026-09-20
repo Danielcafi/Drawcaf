@@ -19,10 +19,10 @@ export default function WishlistPage() {
     const { data, error } = await supabase
       .from('wishlist')
       .select('*, products(*, product_images(url), stores(name, slug))')
-      .eq('user_id', user.id)
+      .eq('buyer_id', user.id)
       .order('created_at', { ascending: false })
     
-    if (!error) setWishlist(data.map(w => ({ ...w, product: w.products })))
+    if (!error && data) setWishlist(data.map(w => ({ ...w, product: w.products })))
     setLoading(false)
   }
   
@@ -30,7 +30,7 @@ export default function WishlistPage() {
     const { error } = await supabase
       .from('wishlist')
       .delete()
-      .eq('user_id', user.id)
+      .eq('buyer_id', user.id)
       .eq('product_id', productId)
     
     if (!error) {
