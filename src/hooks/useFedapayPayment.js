@@ -102,10 +102,13 @@ const useFedapayPayment = () => {
           firstname,
           lastname,
         },
-        onComplete: function(reason, resp) {
+        onComplete: function(firstArg, secondArg) {
           const FedaPay = window.FedaPay
+          const isReasonFirst = typeof firstArg === 'number'
+          const reason = isReasonFirst ? firstArg : secondArg
+          const resp = isReasonFirst ? secondArg : firstArg
 
-          if (reason === FedaPay.CHECKOUT_COMPLETED) {
+          if (reason === FedaPay?.CHECKOUT_COMPLETED || resp?.status === 'approved' || resp?.status === 'completed') {
             setTransaction(resp)
             setLoading(false)
 
@@ -113,7 +116,7 @@ const useFedapayPayment = () => {
               resolveRef.current(resp)
               resolveRef.current = null
             }
-          } else if (reason === FedaPay.DIALOG_DISMISSED) {
+          } else if (reason === FedaPay?.DIALOG_DISMISSED) {
             setError('Paiement annulé par l\'utilisateur')
             setLoading(false)
             if (rejectRef.current) {
@@ -123,7 +126,7 @@ const useFedapayPayment = () => {
           } else {
             const msg = resp?.status === 'failed'
               ? 'Le paiement a échoué. Vérifiez le numéro et réessayez.'
-              : `Paiement refusé (raison: ${reason})`
+              : 'Paiement refusé. Veuillez réessayer.'
             setError(msg)
             setLoading(false)
             if (rejectRef.current) {
