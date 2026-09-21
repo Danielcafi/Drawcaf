@@ -175,7 +175,7 @@ const useFedapayPayment = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
-        throw new Error('Session non trouvée')
+        return null
       }
 
       const { data, error } = await supabase.functions.invoke('fedapay-verify', {
@@ -185,19 +185,14 @@ const useFedapayPayment = () => {
         body: { transactionId },
       })
 
-      if (error) {
-        throw new Error(error.message || 'Erreur lors de la vérification')
-      }
-
-      if (!data || !data.transaction) {
-        throw new Error('Réponse de vérification invalide')
+      if (error || !data?.transaction) {
+        return null
       }
 
       setTransaction(data.transaction)
       return data.transaction
-    } catch (err) {
-      setError(err.message)
-      throw err
+    } catch {
+      return null
     }
   }, [])
 

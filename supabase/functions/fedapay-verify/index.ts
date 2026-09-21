@@ -49,7 +49,7 @@ async function handleVerifyRequest(req: Request) {
   }
 
   const secretKey = Deno.env.get('FEDAPAY_SECRET_KEY')
-  const baseUrl = Deno.env.get('FEDAPAY_BASE_URL') || 'https://api.fedapay.com/v1'
+  const baseUrl = Deno.env.get('FEDAPAY_BASE_URL') || 'https://sandbox-api.fedapay.com/v1'
 
   if (!secretKey) {
     return new Response(JSON.stringify({ error: 'Fedapay non configuré sur le serveur' }), {

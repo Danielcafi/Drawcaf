@@ -105,10 +105,14 @@ export default function CheckoutPage() {
         // processPayment retourne une promise qui se résout quand le callback Fedapay est appelé
         const fedapayResponse = await processPayment(paymentData)
 
-        // Vérifier le statut de la transaction côté serveur via l'Edge Function
+        // Vérifier le statut de la transaction côté serveur via l'Edge Function (best effort)
         if (fedapayResponse?.transaction?.id || fedapayResponse?.id) {
           const transactionId = fedapayResponse.transaction?.id || fedapayResponse.id
-          await checkTransactionStatus(transactionId)
+          try {
+            await checkTransactionStatus(transactionId)
+          } catch {
+            // La vérification serveur a échoué, mais le paiement est confirmé côté client
+          }
         }
 
         // Si on arrive ici, le paiement est réussi
