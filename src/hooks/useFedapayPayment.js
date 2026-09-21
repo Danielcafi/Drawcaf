@@ -39,8 +39,6 @@ const useFedapayPayment = () => {
 
       const script = document.createElement('script')
       script.src = 'https://cdn.fedapay.com/checkout.js?v=1.1.7'
-      script.setAttribute('data-environment', 'sandbox')
-      script.setAttribute('data-public-key', FEDAPAY_CONFIG.publicKey)
       script.async = true
 
       script.onload = () => {
@@ -73,23 +71,11 @@ const useFedapayPayment = () => {
         throw new Error('Fedapay n\'est pas disponible après chargement du script')
       }
 
-      // Supprimer l'ancien bouton s'il existe
-      const oldBtn = document.getElementById('fedapay-btn')
-      if (oldBtn) oldBtn.remove()
-
-      // Creer le bouton cache
-      const payBtn = document.createElement('button')
-      payBtn.id = 'fedapay-btn'
-      payBtn.style.display = 'none'
-      document.body.appendChild(payBtn)
-
-      // Separer le nom en firstname/lastname
       const nameParts = (paymentData.buyerName || '').trim().split(' ')
       const firstname = nameParts[0] || ''
       const lastname = nameParts.slice(1).join(' ') || ''
 
-      // Initialiser Fedapay
-      window.FedaPay.init('#fedapay-btn', {
+      const widget = window.FedaPay.init({
         public_key: FEDAPAY_CONFIG.publicKey,
         environment: FEDAPAY_CONFIG.environment,
         transaction: {
@@ -102,42 +88,32 @@ const useFedapayPayment = () => {
           firstname,
           lastname,
         },
-        onComplete: function({ reason, transaction }) {
-          if (reason === 'CHECKOUT COMPLETE' || transaction?.status === 'approved' || transaction?.status === 'completed') {
-            setTransaction(transaction)
-            setLoading(false)
+        onComplete: function (data) {
+          const reason = data?.reason
+          const txn = data?.transaction
 
+          if (txn?.id || reason === 'CHECKOUT COMPLETE') {
+            setTransaction(txn)
+            setLoading(false)
             if (resolveRef.current) {
-              resolveRef.current(transaction)
+              resolveRef.current(txn)
               resolveRef.current = null
             }
-          } else if (reason === 'DIALOG DISMISSED') {
-            setError('Paiement annulé par l\'utilisateur')
+          } else {
+            setError('Paiement annulé.')
             setLoading(false)
             if (rejectRef.current) {
               rejectRef.current(new Error('Paiement annulé'))
-              rejectRef.current = null
-            }
-          } else {
-            const msg = transaction?.status === 'failed'
-              ? 'Le paiement a échoué. Vérifiez le numéro et réessayez.'
-              : 'Paiement refusé. Veuillez réessayer.'
-            setError(msg)
-            setLoading(false)
-            if (rejectRef.current) {
-              rejectRef.current(new Error(msg))
               rejectRef.current = null
             }
           }
         }
       })
 
-      // Retourner une promise avec timeout
       return new Promise((resolve, reject) => {
         resolveRef.current = resolve
         rejectRef.current = reject
 
-        // Timeout de 60s pour éviter un blocage infini
         const timeout = setTimeout(() => {
           if (resolveRef.current) {
             setLoading(false)
@@ -148,10 +124,8 @@ const useFedapayPayment = () => {
           }
         }, 60000)
 
-        // Ouvrir le popup Fedapay
-        payBtn.click()
+        widget.open()
 
-        // Nettoyer le timeout si le popup se ferme avant
         const origResolve = resolve
         const origReject = reject
         resolveRef.current = (val) => {
