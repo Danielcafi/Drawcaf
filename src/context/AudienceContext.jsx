@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 
-const AudienceContext = createContext()
+const AudienceContext = createContext({ audience: 'seller', setAudience: () => {} })
 
 export function AudienceProvider({ children }) {
   const [audience, setAudience] = useState('seller')

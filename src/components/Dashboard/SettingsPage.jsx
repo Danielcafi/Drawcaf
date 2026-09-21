@@ -171,18 +171,14 @@ export default function SettingsPage() {
       if (avatarFile) {
         const avatarUrl = await uploadImage(avatarFile, 'avatar')
         updates.avatar_url = avatarUrl
-        console.log('Avatar URL:', avatarUrl)
       }
 
       if (bannerFile) {
         const bannerUrl = await uploadImage(bannerFile, 'banner')
         updates.banner_url = bannerUrl
-        console.log('Banner URL:', bannerUrl)
       }
 
-      console.log('Updates envoyes:', updates)
-      const result = await updateProfile(updates)
-      console.log('Resultat updateProfile:', result)
+      await updateProfile(updates)
       setSuccess('Profil mis a jour avec succes')
       setAvatarFile(null)
       setBannerFile(null)

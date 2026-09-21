@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import NavbarDropdown from "./navbarDropdown";
 import { useAuthStore, useStoreStore, useCartStore } from "../../store";
 import { getImageUrl } from "../../utils/image";
 import { ShoppingCart, User, Search, ChevronDown, Store, Package, LogOut, Home, BarChart3 } from "lucide-react";

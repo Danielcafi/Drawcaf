@@ -121,10 +121,13 @@ const useFedapayPayment = () => {
               rejectRef.current = null
             }
           } else {
-            setError('Statut de paiement inconnu')
+            const msg = resp?.status === 'failed'
+              ? 'Le paiement a échoué. Vérifiez le numéro et réessayez.'
+              : `Paiement refusé (raison: ${reason})`
+            setError(msg)
             setLoading(false)
             if (rejectRef.current) {
-              rejectRef.current(new Error('Statut inconnu'))
+              rejectRef.current(new Error(msg))
               rejectRef.current = null
             }
           }

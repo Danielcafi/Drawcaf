@@ -17,10 +17,10 @@ import DrawcafLogo from "../components/DrawcafLogo";
 export default function Login() {
   const navigate = useNavigate();
   const [role, setRole] = useState("owner");
-  const [email, setEmail] = useState("danielredoun@gmail.com");
-  const [password, setPassword] = useState("••••••••••••");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [loading, setLoading] = useState(false);

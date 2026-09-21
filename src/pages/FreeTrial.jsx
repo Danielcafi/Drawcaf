@@ -19,9 +19,9 @@ export default function FreeTrial() {
   const [step, setStep] = useState(1);
   const [selectedChannels, setSelectedChannels] = useState(["online"]);
   const [businessType, setBusinessType] = useState("starting");
-  const [storeName, setStoreName] = useState("Buddies Ceramic Studio");
-  const [email, setEmail] = useState("danielredoun@gmail.com");
-  const [password, setPassword] = useState("••••••••••••");
+  const [storeName, setStoreName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLaunching, setIsLaunching] = useState(false);
 
   const toggleChannel = (id) => {

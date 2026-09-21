@@ -18,11 +18,11 @@ import Footer from "../components/Footer";
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
-    name: "Daniel Redoun",
-    email: "danielredoun@gmail.com",
-    storeUrl: "buddies.drawcaf.shop",
-    topic: "Technical & Integration",
-    message: "We'd like guidance on integrating our ERP stock management directly with Drawcaf Admin API.",
+    name: "",
+    email: "",
+    storeUrl: "",
+    topic: "",
+    message: "",
   });
 
   const handleSubmit = (e) => {

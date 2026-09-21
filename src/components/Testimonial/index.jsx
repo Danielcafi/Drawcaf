@@ -20,21 +20,6 @@ const sellerTestimonials = [
   },
 ];
 
-const buyerTestimonials = [
-  {
-    name: "Fatou Diallo",
-    role: "Acheteuse, Cotonou",
-    quote: "J'ai trouvé des bijoux incroyables sur Drawcaf. La livraison était rapide et le paiement sécurisé. Je suis conquise !",
-    img: "/testimonial.png",
-  },
-  {
-    name: "Ibrahim Touré",
-    role: "Collectionneur, Abidjan",
-    quote: "La qualité des produits est exceptionnelle. Chaque pièce raconte une histoire. Drawcaf est devenu ma boutique préférée.",
-    img: "/testimonial.png",
-  },
-];
-
 export default function Testimonial() {
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
